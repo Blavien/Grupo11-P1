@@ -1,7 +1,9 @@
+import java.io.File;
+import java.io.IOException;
+
 public class Main {
 
     public static void main ( String[] args ) {
-
 
         ClientThread client = new ClientThread ( 8888 , 1 , 2000 );
         client.start ( );
