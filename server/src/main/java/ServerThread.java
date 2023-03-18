@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -29,6 +30,8 @@ public class ServerThread extends Thread {
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
                 String message = in.readUTF ( );
+                System.out.println(FiltroThread.removePalavrasRepetidas(message));
+
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
             } catch ( IOException e ) {
