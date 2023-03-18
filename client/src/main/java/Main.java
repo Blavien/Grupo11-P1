@@ -81,6 +81,7 @@ public class Main {
                         }
                     }
                     clients.clear();//Removes the elements that holded the threads
+                    id_counter=0;
                 }
                 case 5 -> {
                     menu = false;
