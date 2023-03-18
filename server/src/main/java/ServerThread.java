@@ -1,8 +1,9 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -10,6 +11,7 @@ public class ServerThread extends Thread {
     private PrintWriter out;
     private ServerSocket server;
     private Socket socket;
+
 
     public ServerThread ( int port ) {
         this.port = port;
@@ -20,17 +22,25 @@ public class ServerThread extends Thread {
         }
     }
 
-    public void run ( ) {
+    /**
+     *
+     * @return threadpool_size Reads from Server.config the size of our thread/task pool
+     */
 
+
+    public void run ( ) {
         while ( true ) {
             try {
                 System.out.println ( "Accepting Data" );
                 socket = server.accept ( );
+
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
+
                 String message = in.readUTF ( );
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
+
             } catch ( IOException e ) {
                 e.printStackTrace ( );
             }

@@ -1,10 +1,12 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 public class Main {
     public static void main ( String[] args ) {
+        ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize()); //
+
         ArrayList<ClientThread> clients = new ArrayList<ClientThread>(); //Saves the reference to the threads
         Scanner in = new Scanner(System.in);
         int i,n,m;
@@ -46,10 +48,13 @@ public class Main {
                     n = in.nextInt();
                     for (int k = 0; k < n; k++) {
                         clients.add(new ClientThread(8888, id_counter + k, 2000));
-                        clients.get(id_counter + k).start(); //Starts the threads
-                        clients.get(id_counter + k).WriteLog("", 1); //Writing on the server.log
+                        clients.get(id_counter + k).WriteLog("", 4); //Enters wait
                     }
                     id_counter = id_counter + n;
+                    //Coloca todas as threads no executor -- Depois tratamos no run
+                    for (ClientThread client : clients) {
+                        executor.submit(client);
+                    }
                 }
                 case 3 -> {
                     System.out.println("\nInput the client's id that u want to kill:");
@@ -59,7 +64,7 @@ public class Main {
                             if (clients.get(l).getID() == m) {
                                 clients.get(l).WriteLog("", 2);
                                 clients.get(l).join();
-                                clients.remove(l);
+                                //clients.remove(l);
                                 break;
                             }
                         } catch (InterruptedException e) {
@@ -84,9 +89,23 @@ public class Main {
                 }
                 case 5 -> {
                     menu = false;
+                    executor.shutdown();
                     break;
                 }
             }
         }
+    }
+
+    private static int getThreadPoolSize (){
+        int threadpool_size = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("server/Server.config"));
+            threadpool_size = Integer.parseInt(br.readLine());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return threadpool_size;
     }
 }
