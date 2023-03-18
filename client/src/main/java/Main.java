@@ -8,11 +8,20 @@ public class Main {
         ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize()); //
 
         ArrayList<ClientThread> clients = new ArrayList<ClientThread>(); //Saves the reference to the threads
+        int aliveThreads = 0;
+        for (ClientThread client : clients) {
+            if(!(client.isInterrupted())){
+            aliveThreads++;
+            }
+        }
+
         Scanner in = new Scanner(System.in);
         int i,n,m;
         int id_counter = 0;
+        int index = 0;
         boolean menu = true;
         while(menu) {
+            System.out.println("Threads still alive: " + aliveThreads);
             System.out.println("✶✶✶✶✶✶✶✶✶✶✶✶✶✶ GRUPO 11 ✶✶✶✶✶✶✶✶✶✶✶✶✶✶✶");
             System.out.println("1. Choose a client and send a message");
             System.out.println("2. Create new clients");
@@ -25,51 +34,78 @@ public class Main {
             switch (i) {
                 case 1 -> {
                     boolean clientExists = false;
+                    String clientList = "";
                     if (clients.isEmpty()) {
                         System.out.println("\nWe don't have any active clients right now, please create some.\n");
                         break;
                     }
+                    clientList += "Available clients: \n";
+                    for (ClientThread clientThread : clients) {
+                        clientList += "| ";
+                        clientList += clientThread.getID() + " ";
+
+                    }
+                    System.out.println("\n" + clientList + "\n");
                     System.out.println("\nFrom which client do you want to send the message to:");
                     m = in.nextInt();
+
                     for (ClientThread clientThread : clients) {
                         if (clientThread.getID() == m) {
                             clientExists = true;
                             break;
                         }
                     }
+
                     if (clientExists) {
                         clients.get(m).sendMessage();
-                    } else {
+                    }
+                    if((clients.size()-1)<m){
                         System.out.println("\nThat client isn't available right now. Try another one.\n");
                     }
+
                 }
                 case 2 -> {
                     System.out.println("\nHow many clients do you want created:");
                     n = in.nextInt();
                     for (int k = 0; k < n; k++) {
                         clients.add(new ClientThread(8888, id_counter + k, 2000));
-                        clients.get(id_counter + k).WriteLog("", 4); //Enters wait
+                        clients.get(index + k).start(); //Starts the threads
+                        clients.get(index + k).WriteLog("", 1); //Writing on the server.log
                     }
                     id_counter = id_counter + n;
-                    //Coloca todas as threads no executor -- Depois tratamos no run
-                    for (ClientThread client : clients) {
-                        executor.submit(client);
-                    }
+                    index +=n;
                 }
                 case 3 -> {
+                    boolean clientExists2 = false;
                     System.out.println("\nInput the client's id that u want to kill:");
                     m = in.nextInt();
-                    for (int l = 0; l < clients.size(); l++) {
-                        try {
-                            if (clients.get(l).getID() == m) {
-                                clients.get(l).WriteLog("", 2);
-                                clients.get(l).join();
-                                //clients.remove(l);
-                                break;
-                            }
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                    for (ClientThread clientThread : clients) {
+                        if (clientThread.getID() == m) {
+                            clientExists2 = true;
+
                         }
+                    }
+
+                    if(clientExists2){
+                        for (int l = 0; l < clients.size(); l++) {
+                            try {
+                                if (clients.get(l).getID() == m) {
+                                    clients.get(l).WriteLog("", 2);
+                                    clients.get(l).join();
+                                    clients.remove(l);
+                                    index--;
+                                    break;
+                                }
+
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }
+                    }
+                     else {
+                        System.out.println("\nThe client you tried to delete isn't created, please try to delete an existing client\n");
+                        break;
                     }
                 }
                 case 4 -> {
@@ -84,6 +120,7 @@ public class Main {
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
+
                     }
                     clients.clear();//Removes the elements that holded the threads
                 }
