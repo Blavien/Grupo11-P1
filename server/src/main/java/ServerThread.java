@@ -1,9 +1,12 @@
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -29,6 +32,7 @@ public class ServerThread extends Thread {
 
 
     public void run ( ) {
+
         while ( true ) {
             try {
                 System.out.println ( "Accepting Data" );
@@ -38,6 +42,7 @@ public class ServerThread extends Thread {
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
 
                 String message = in.readUTF ( );
+                System.out.println(FiltroThread.removePalavrasRepetidas(message));
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
 
