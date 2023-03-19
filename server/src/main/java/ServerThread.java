@@ -29,6 +29,9 @@ public class ServerThread extends Thread {
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
                 String message = in.readUTF ( );
+                FiltroThread A = new FiltroThread(message,"C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\filtro.txt");
+                A.run();
+                message=A.getFilteredMessage();
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
             } catch ( IOException e ) {
