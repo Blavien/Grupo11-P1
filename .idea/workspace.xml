@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e0135c82-a638-4c26-b60d-560dce94d81a" name="Changes" comment="&lt;feat&gt;(Clients): Task pool, com executor e queue." />
+    <list default="true" id="e0135c82-a638-4c26-b60d-560dce94d81a" name="Changes" comment="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;client/target/classes/ClientThread.class&#10;#&#9;client/target/classes/Main.class&#10;#&#9;server/target/classes/Main.class&#10;#&#9;server/target/classes/ServerThread.class">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/ClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/ClientThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/Server.log" beforeDir="false" afterPath="$PROJECT_DIR$/server/Server.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/ServerThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/ServerThread.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +112,21 @@
       <option name="project" value="LOCAL" />
       <updated>1679174098666</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="&lt;feat&gt;(Clients): Task pool, com executor e queue.">
+      <created>1679174158069</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1679174158069</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;client/target/classes/ClientThread.class&#10;#&#9;client/target/classes/Main.class&#10;#&#9;server/target/classes/Main.class&#10;#&#9;server/target/classes/ServerThread.class">
+      <created>1679174222857</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1679174222857</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,7 +134,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -125,6 +157,7 @@
     <MESSAGE value="&lt;feat&gt;(Clients): Implementado o menu para a criação de n clientes, envio de mensagens apartir de um cliente, término de uma thread e término de todas as threads. &#10;&lt;feat&gt;(Clients): Implementado o envio de mensagens do cliente para o servidor" />
     <MESSAGE value="&lt;feat&gt;(Clients): Implementaçao do envio de msgs e do menu para os clientes" />
     <MESSAGE value="&lt;feat&gt;(Clients): Task pool, com executor e queue." />
-    <option name="LAST_COMMIT_MESSAGE" value="&lt;feat&gt;(Clients): Task pool, com executor e queue." />
+    <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;client/target/classes/ClientThread.class&#10;#&#9;client/target/classes/Main.class&#10;#&#9;server/target/classes/Main.class&#10;#&#9;server/target/classes/ServerThread.class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;client/target/classes/ClientThread.class&#10;#&#9;client/target/classes/Main.class&#10;#&#9;server/target/classes/Main.class&#10;#&#9;server/target/classes/ServerThread.class" />
   </component>
 </project>

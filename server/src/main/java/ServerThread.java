@@ -42,7 +42,6 @@ public class ServerThread extends Thread {
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
 
                 String message = in.readUTF ( );
-                System.out.println(FiltroThread.removePalavrasRepetidas(message));
 
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );

@@ -53,7 +53,7 @@ public class ClientThread extends Thread {
         writing.lock();
         FileWriter fw = null;
         try {
-            fw = new FileWriter("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log",true);
+            fw = new FileWriter("server/Server.log",true);
             switch (event) {
                 case 1 -> { //Connected to the server
                     fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");

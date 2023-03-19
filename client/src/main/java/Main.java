@@ -70,10 +70,13 @@ public class Main {
                     for (int k = 0; k < n; k++) {
                         clients.add(new ClientThread(8888, id_counter + k, 2000));
                         clients.get(index + k).start(); //Starts the threads
-                        clients.get(index + k).WriteLog("", 1); //Writing on the server.log
+                        clients.get(index + k).WriteLog("", 4); //Writing on the server.log
                     }
                     id_counter = id_counter + n;
                     index +=n;
+                    for(ClientThread client : clients){
+                        executor.submit(client);
+                    }
                 }
                 case 3 -> {
                     boolean clientExists2 = false;
@@ -105,8 +108,8 @@ public class Main {
                     }
                      else {
                         System.out.println("\nThe client you tried to delete isn't created, please try to delete an existing client\n");
-                        break;
                     }
+                    break;
                 }
                 case 4 -> {
                     if (clients.isEmpty()) {
