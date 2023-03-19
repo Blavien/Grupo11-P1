@@ -69,8 +69,12 @@ public class Main {
                         break;
                     }
                     for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        clients.get(l).WriteLog("", 2);
-                        clients.get(l).setImDone(true); //Avisam para terminar estas thread
+                        if(clients.get(l) != null){
+                            clients.get(l).WriteLog("",2);
+                            clients.get(l).setImDone(true); //Avisam para terminar estas thread
+                        }else{
+                            continue;
+                        }
                     }
                     clients.clear();//Removes the elements that holded the threads
                 case 5:

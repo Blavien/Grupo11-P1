@@ -3,10 +3,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.ArrayList;
 
 public class ServerThread extends Thread {
     private final int port;
@@ -36,13 +32,15 @@ public class ServerThread extends Thread {
         while ( true ) {
             try {
                 System.out.println ( "Accepting Data" );
+                if(socket != null && socket.isConnected()){
+                    System.out.println("SOCKET VALUE: "+ socket.isConnected() );
+                }
                 socket = server.accept ( );
 
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
 
                 String message = in.readUTF ( );
-                System.out.println(FiltroThread.removePalavrasRepetidas(message));
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
 
