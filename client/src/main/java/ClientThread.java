@@ -22,23 +22,33 @@ public class ClientThread extends Thread {
     private Socket socket;
     Scanner scan = new Scanner(System.in);
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-    private ExecutorService executor;
     private LinkedBlockingQueue<ClientThread> clientThreadQueue ;
     private int queueCapacity;
     ReentrantLock queueConditionLock = new ReentrantLock();
     Condition queueNotFull = queueConditionLock.newCondition();
+    ReentrantLock serverPrintLock = new ReentrantLock();
+    private ReentrantLock logWrittenLock = new ReentrantLock();
+    private ReentrantLock messageLock = new ReentrantLock();
     private boolean amIDone;
-    private static final Semaphore serverAccess = new Semaphore(10); // Maximum of 10 threads can access the server at the same time
+    private boolean connected;
+    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 10 threads can access the server at the same time
     public ClientThread ( int port , int id , int freq ) {
         this.port = port;
         this.id = id;
         this.freq = freq;
         this.clientThreadQueue = new LinkedBlockingQueue<>();
-        this.queueCapacity = 10;
+        this.queueCapacity = 5;
         this.amIDone = false;
+        this.connected = false;
     }
     public int getID () {
         return this.id;
+    }
+    public boolean getConnection () {
+        return this.connected;
+    }
+    public boolean setImDone(boolean bool){
+        return this.amIDone = bool;
     }
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
@@ -50,64 +60,55 @@ public class ClientThread extends Thread {
      *
      */
     public void WriteLog(String msg, int event){
-        writing.lock();
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter("C:\\Users\\User\\Desktop\\LEI 3 ANO\\2 semestre\\PA\\Projecto 1\\server\\Server.log",true);
-            switch (event) {
-                case 1 -> { //Connected to the server
-                    fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
+        synchronized (writing){
+            try (FileWriter fw = new FileWriter("server/Server.log", true)) {
+                switch (event) {
+                    case 1 -> { //Connected to the server
+                        fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
+                    }
+                    case 2 -> { //Disconnected from the server
+                        fw.append(timestamp + " - Action : DISCONNECTED - CLIENT ID:" + id + "\n");
+                    }
+                    case 3 -> { //Sent a message
+                        fw.append(timestamp + " - Action : MESSAGE - CLIENT ID:" + id + " - " + msg + "\n");
+                    }
+                    case 4 -> { //Waiting to enter the server
+                        fw.append(timestamp + " - Action : WAITING - CLIENT ID:" + id + "\n");
+                    }
                 }
-                case 2 -> { //Disconnected from the server
-                    fw.append(timestamp + " - Action : DISCONNECTED - CLIENT ID:" + id + "\n");
-                }
-                case 3 -> { //Sent a message
-                    fw.append(timestamp + " - Action : MESSAGE - CLIENT ID:" + id + " - " + msg + "\n");
-                }
-                case 4 -> { //Waiting to enter the server
-                    fw.append(timestamp + " - Action : WAITING - CLIENT ID:" + id + "\n");
-                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            fw.close();
-            writing.unlock();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
-
-
 
     public void sendMessage (){
         try {
-            out = new DataOutputStream ( socket.getOutputStream ( ) );  //Write to the server
-            in = new BufferedReader ( new InputStreamReader ( socket.getInputStream ( ) ) ); //Write to console
+            socket = new Socket("localhost", port);
+            out = new DataOutputStream(socket.getOutputStream()); // Write to the server
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
 
-            System.out.println("\nInsert your message:");
-            String message;
-            message = scan.nextLine();
-            out.writeUTF ( "CLIENT ID: "+ id +" - " + message);
-            WriteLog(message, 3); //Writing on server.log
-
-            String response = message;
-            System.out.println ( "\nSERVER: MESSAGE RECEIVED - CLIENT " + id + "\n");
-            out.flush ( );
-            amIDone = true;
+            serverPrintLock.lock();
+            System.out.println("WRITE YOUR MESSAGE:");
+            String message = scan.nextLine();
+            try {
+                out.writeUTF("CLIENT "+id+": " + message);
+                System.out.println("\nMessage sent sucessuflly. ");
+            } finally {
+                serverPrintLock.unlock();
+            }
+            logWrittenLock.lock();
+            WriteLog(message,3);
+            logWrittenLock.unlock();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     public boolean stopLiving(){
         return amIDone;
     }
-    /**
-     * We will have a queue where the threads are first put in, and then by FIFO they will advance to the server
-     * @param semaphore Receives the semaphore that is used to control the number of threads inside the server
-     *                  <p>LOGIC</p>
-     * The executor submits our threads on the main file, and this function is called on the run(), that means that threads execute this code
-     * ADICIONAR DEPOIS
-     */
-    public void connectsToServer(Semaphore semaphore) {
-        boolean logWritten = false;
+    public void connectsToServer(Semaphore serverAccess) {
         try {
             clientQueueLock.lock();
             while (clientThreadQueue.size() == queueCapacity) {
@@ -121,20 +122,17 @@ public class ClientThread extends Thread {
             clientQueueLock.unlock();
         }
         try {
-            semaphore.acquire();
-            if (logWritten == false) {
-                varWriting.lock();
-                WriteLog("", 1); // Writing on server.log
-                logWritten = true;
-                varWriting.unlock();
-            }
+            serverAccess.acquire();
+
+            serverPrintLock.lock();
+            WriteLog("", 1); // Writing on server.log
+            this.connected = true;
+            serverPrintLock.unlock();
+
             socket = new Socket("localhost", port);
             out = new DataOutputStream(socket.getOutputStream()); // Write to the server
             in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
 
-            out.writeUTF("\nHello server! I'm CLIENT " + id + ".");
-
-            System.out.println("\nSERVER: Welcome to GRUPO 11 Server!! Client " + id + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -153,8 +151,16 @@ public class ClientThread extends Thread {
         if (stopLiving()) {
             System.out.println("\nThis thread is going to finish. " + id + "\n");
             serverAccess.release();
+            logWrittenLock.lock();
             WriteLog("", 2);
+            logWrittenLock.unlock();
         }
-        this.interrupt();
+        try {
+            this.connected=false;
+            this.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

@@ -28,23 +28,47 @@ public class ServerThread extends Thread {
      */
 
 
-    public void run ( ) {
-        while ( true ) {
+    public void run() {
+        while (true) {
             try {
-                System.out.println ( "Accepting Data" );
-                socket = server.accept ( );
-
-                in = new DataInputStream ( socket.getInputStream ( ) );
-                out = new PrintWriter ( socket.getOutputStream ( ) , true );
-
-                String message = in.readUTF ( );
-                System.out.println ( "***** " + message + " *****" );
-                out.println ( message.toUpperCase ( ) );
-
-            } catch ( IOException e ) {
-                e.printStackTrace ( );
+                System.out.println("Accepting Data");
+                Socket socket = server.accept();
+                DataInputStream in = new DataInputStream(socket.getInputStream());
+                Thread thread = new Thread(new RequestHandler(socket, in));
+                thread.start();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+    }
+    private class RequestHandler implements Runnable {
+        private Socket socket;
+        private DataInputStream in;
+        private PrintWriter out;
 
+        public RequestHandler(Socket socket, DataInputStream in) {
+            this.socket = socket;
+            this.in = in;
+        }
+
+        @Override
+        public void run() {
+            try {
+                out = new PrintWriter(socket.getOutputStream(), true);
+
+                String message = in.readUTF();
+                FiltroThread filteredMessage = new FiltroThread(message,"server/filtro.txt");
+                filteredMessage.run();
+                out.println(message.toUpperCase());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
