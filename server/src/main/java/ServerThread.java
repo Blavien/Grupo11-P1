@@ -11,7 +11,6 @@ public class ServerThread extends Thread {
     private ServerSocket server;
     private Socket socket;
 
-
     public ServerThread ( int port ) {
         this.port = port;
         try {
@@ -21,29 +20,20 @@ public class ServerThread extends Thread {
         }
     }
 
-    /**
-     *
-     * @return threadpool_size Reads from Server.config the size of our thread/task pool
-     */
-
-
     public void run ( ) {
 
         while ( true ) {
             try {
                 System.out.println ( "Accepting Data" );
-                if(socket != null && socket.isConnected()){
-                    System.out.println("SOCKET VALUE: "+ socket.isConnected() );
-                }
                 socket = server.accept ( );
-
                 in = new DataInputStream ( socket.getInputStream ( ) );
                 out = new PrintWriter ( socket.getOutputStream ( ) , true );
-
                 String message = in.readUTF ( );
+                FiltroThread A = new FiltroThread(message,"C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\filtro.txt");
+                A.run();
+                message=A.getFilteredMessage();
                 System.out.println ( "***** " + message + " *****" );
                 out.println ( message.toUpperCase ( ) );
-
             } catch ( IOException e ) {
                 e.printStackTrace ( );
             }
