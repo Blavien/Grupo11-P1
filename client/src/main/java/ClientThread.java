@@ -43,6 +43,9 @@ public class ClientThread extends Thread {
     public boolean setImDone(boolean bool){
         return this.amIDone = bool;
     }
+    public boolean stopLiving(){
+        return amIDone;
+    }
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
      * @param event are the many possible events that a client can write in the server.log
@@ -75,10 +78,11 @@ public class ClientThread extends Thread {
         }
     }
 
-
-
     public void sendMessage (){
         try {
+            if(socket != null && socket.isConnected()){
+                System.out.println("SOCKET VALUE: "+ socket.isConnected() );
+            }
             out = new DataOutputStream ( socket.getOutputStream ( ) );  //Write to the server
             in = new BufferedReader ( new InputStreamReader ( socket.getInputStream ( ) ) ); //Write to console
 
@@ -96,10 +100,8 @@ public class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
     }
-    public boolean stopLiving(){
-        return amIDone;
-    }
-    public void connectsToServer() {
+    public void connectsToServer( Semaphore serverAccess) {
+        boolean logWritten = false;
         try {
             clientQueueLock.lock();
             while (clientThreadQueue.size() == queueCapacity) {
@@ -112,14 +114,6 @@ public class ClientThread extends Thread {
         } finally {
             clientQueueLock.unlock();
         }
-    }
-
-    /**
-     * Here we have a thread/task pool and the task we want to submit is the connection to the server
-     */
-    public void run() {
-        boolean logWritten = false;
-        connectsToServer();
         try {
             serverAccess.acquire();
             if (logWritten == false){
@@ -140,6 +134,13 @@ public class ClientThread extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Here we have a thread/task pool and the task we want to submit is the connection to the server
+     */
+    public void run() {
+        connectsToServer(serverAccess);
         while (!stopLiving()) {
             // continue running until the thread is interrupted or stopLiving() returns true
         }
@@ -152,6 +153,9 @@ public class ClientThread extends Thread {
                     socket.close();
                 }
                 this.join();
+                if (!this.isAlive()) {
+                    System.out.println("Thread "+id+" has finished.");
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
