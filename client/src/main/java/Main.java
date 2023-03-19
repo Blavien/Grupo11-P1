@@ -2,17 +2,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
+    private static final Scanner in = new Scanner(System.in);
     public static void main ( String[] args ) {
-        ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize()); //
-
-        ArrayList<ClientThread> clients = new ArrayList<ClientThread>(); //Saves the reference to the threads
-        Scanner in = new Scanner(System.in);
-        int i,n,m;
+        ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize());
         int id_counter = 0;
         boolean menu = true;
-        while(menu) {
+        while (menu) {
             System.out.println("✶✶✶✶✶✶✶✶✶✶✶✶✶✶ GRUPO 11 ✶✶✶✶✶✶✶✶✶✶✶✶✶✶✶");
             System.out.println("1. Choose a client and send a message");
             System.out.println("2. Create new clients");
@@ -21,77 +21,62 @@ public class Main {
             System.out.println("5. Exit");
             System.out.println("\nThere are " + clients.size() + " clients active right now");
             System.out.println("\nChoose an option:");
-            i = in.nextInt();
+            int i = in.nextInt();
             switch (i) {
-                case 1 -> {
-                    boolean clientExists = false;
+                case 1:
                     if (clients.isEmpty()) {
                         System.out.println("\nWe don't have any active clients right now, please create some.\n");
                         break;
                     }
                     System.out.println("\nFrom which client do you want to send the message to:");
-                    m = in.nextInt();
-                    for (ClientThread clientThread : clients) {
-                        if (clientThread.getID() == m) {
-                            clientExists = true;
-                            break;
-                        }
-                    }
-                    if (clientExists) {
+                    int m = in.nextInt();
+                    if (clients.containsKey(m)) {
                         clients.get(m).sendMessage();
                     } else {
                         System.out.println("\nThat client isn't available right now. Try another one.\n");
                     }
-                }
-                case 2 -> {
+                    break;
+                case 2:
                     System.out.println("\nHow many clients do you want created:");
-                    n = in.nextInt();
+                    int n = in.nextInt();
                     for (int k = 0; k < n; k++) {
-                        clients.add(new ClientThread(8888, id_counter + k, 2000));
-                        clients.get(id_counter + k).WriteLog("", 4); //Enters wait
-                    }
-                    id_counter = id_counter + n;
-                    //Coloca todas as threads no executor -- Depois tratamos no run
-                    for (ClientThread client : clients) {
+                        int clientId = id_counter + k;
+                        ClientThread client = new ClientThread(8888, clientId, 2000);
+                        clients.put(clientId, client);
+
+                        client.WriteLog("", 4); //Enters wait
+
                         executor.submit(client);
                     }
-                }
-                case 3 -> {
+                    id_counter += n;
+                    break;
+                case 3:
                     System.out.println("\nInput the client's id that u want to kill:");
-                    m = in.nextInt();
-                    for (int l = 0; l < clients.size(); l++) {
-                        try {
-                            if (clients.get(l).getID() == m) {
-                                clients.get(l).WriteLog("", 2);
-                                clients.get(l).join();
-                                //clients.remove(l);
-                                break;
-                            }
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                    int clientId = in.nextInt();
+                    if (clients.containsKey(clientId)) {
+                        ClientThread client = clients.get(clientId);
+
+                        client.setImDone(true);//Vai avisar a thread para terminar
+                        client.WriteLog("", 2); //
+                        clients.remove(clientId);
+                    } else {
+                        System.out.println("\nThat client doesn't exist. Try another one.\n");
                     }
-                }
-                case 4 -> {
+                    break;
+                case 4:
                     if (clients.isEmpty()) {
-                        System.out.println("\nWe don't have any active clients right now, please create some.\n");
+                        System.out.println("\nWe don't have any active clients right now.\n");
                         break;
                     }
-                    for (ClientThread client : clients) {
-                        try {
-                            client.WriteLog("", 2);
-                            client.join();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
+                        clients.get(l).WriteLog("", 2);
+                        clients.get(l).setImDone(true); //Avisam para terminar estas thread
                     }
                     clients.clear();//Removes the elements that holded the threads
-                }
-                case 5 -> {
+                case 5:
                     menu = false;
                     executor.shutdown();
                     break;
-                }
             }
         }
     }

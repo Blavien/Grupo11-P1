@@ -40,6 +40,9 @@ public class ClientThread extends Thread {
     public int getID () {
         return this.id;
     }
+    public boolean setImDone(boolean bool){
+        return this.amIDone = bool;
+    }
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
      * @param event are the many possible events that a client can write in the server.log
@@ -50,28 +53,25 @@ public class ClientThread extends Thread {
      *
      */
     public void WriteLog(String msg, int event){
-        writing.lock();
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter("C:\\Users\\User\\Desktop\\LEI 3 ANO\\2 semestre\\PA\\Projecto 1\\server\\Server.log",true);
-            switch (event) {
-                case 1 -> { //Connected to the server
-                    fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
+        synchronized (writing){
+            try (FileWriter fw = new FileWriter("server/Server.log", true)) {
+                switch (event) {
+                    case 1 -> { //Connected to the server
+                        fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
+                    }
+                    case 2 -> { //Disconnected from the server
+                        fw.append(timestamp + " - Action : DISCONNECTED - CLIENT ID:" + id + "\n");
+                    }
+                    case 3 -> { //Sent a message
+                        fw.append(timestamp + " - Action : MESSAGE - CLIENT ID:" + id + " - " + msg + "\n");
+                    }
+                    case 4 -> { //Waiting to enter the server
+                        fw.append(timestamp + " - Action : WAITING - CLIENT ID:" + id + "\n");
+                    }
                 }
-                case 2 -> { //Disconnected from the server
-                    fw.append(timestamp + " - Action : DISCONNECTED - CLIENT ID:" + id + "\n");
-                }
-                case 3 -> { //Sent a message
-                    fw.append(timestamp + " - Action : MESSAGE - CLIENT ID:" + id + " - " + msg + "\n");
-                }
-                case 4 -> { //Waiting to enter the server
-                    fw.append(timestamp + " - Action : WAITING - CLIENT ID:" + id + "\n");
-                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            fw.close();
-            writing.unlock();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -99,15 +99,7 @@ public class ClientThread extends Thread {
     public boolean stopLiving(){
         return amIDone;
     }
-    /**
-     * We will have a queue where the threads are first put in, and then by FIFO they will advance to the server
-     * @param semaphore Receives the semaphore that is used to control the number of threads inside the server
-     *                  <p>LOGIC</p>
-     * The executor submits our threads on the main file, and this function is called on the run(), that means that threads execute this code
-     * ADICIONAR DEPOIS
-     */
-    public void connectsToServer(Semaphore semaphore) {
-        boolean logWritten = false;
+    public void connectsToServer() {
         try {
             clientQueueLock.lock();
             while (clientThreadQueue.size() == queueCapacity) {
@@ -120,13 +112,21 @@ public class ClientThread extends Thread {
         } finally {
             clientQueueLock.unlock();
         }
+    }
+
+    /**
+     * Here we have a thread/task pool and the task we want to submit is the connection to the server
+     */
+    public void run() {
+        boolean logWritten = false;
+        connectsToServer();
         try {
-            semaphore.acquire();
-            if (logWritten == false) {
-                varWriting.lock();
-                WriteLog("", 1); // Writing on server.log
-                logWritten = true;
-                varWriting.unlock();
+            serverAccess.acquire();
+            if (logWritten == false){
+                synchronized (varWriting){
+                    WriteLog("", 1); // Writing on server.log
+                    logWritten = true;
+                }
             }
             socket = new Socket("localhost", port);
             out = new DataOutputStream(socket.getOutputStream()); // Write to the server
@@ -140,21 +140,24 @@ public class ClientThread extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Here we have a thread/task pool and the task we want to submit is the connection to the server
-     */
-    public void run() {
-        connectsToServer(serverAccess);
-        while (!Thread.currentThread().isInterrupted() && !stopLiving()) {
+        while (!stopLiving()) {
             // continue running until the thread is interrupted or stopLiving() returns true
         }
         if (stopLiving()) {
-            System.out.println("\nThis thread is going to finish. " + id + "\n");
-            serverAccess.release();
-            WriteLog("", 2);
+            try {
+                synchronized (varWriting){
+                    System.out.println("\nThis thread is going to finish. " + id + "\n");
+                    serverAccess.release();
+                    WriteLog("", 2);
+                    socket.close();
+                }
+                this.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        this.interrupt();
+
     }
 }
