@@ -1,4 +1,1 @@
-hello
-goodbye
-cara
-hugh
+hello goodbye cara hugh
