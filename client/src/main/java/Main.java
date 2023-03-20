@@ -32,7 +32,7 @@ public class Main {
                     System.out.println("\nFrom which client do you want to send the message to:");
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
-                        if(clients.get(m).getConnection()){
+                        if(clients.get(m).isConnected()){
                             clients.get(m).sendMessage();
                         }else{
                             System.out.println("\nU think u can send a message from an offline client?");
@@ -60,10 +60,10 @@ public class Main {
                     System.out.println("\nInput the client's id that u want to kill:");
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
-                        if(clients.get(clientId).getConnection()){
+                        if(clients.get(clientId).isConnected()){
                             ClientThread client = clients.get(clientId);
                             client.setImDone(true);//Vai avisar a thread para terminar
-                            clients.remove(clientId);
+                            clients.remove(clientId); //remove deste array
                         }else{
                             System.out.println("\nThat client isn't connected to the server.\n");
                         }

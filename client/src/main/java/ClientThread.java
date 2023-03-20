@@ -31,7 +31,7 @@ public class ClientThread extends Thread {
     private ReentrantLock messageLock = new ReentrantLock();
     private boolean amIDone;
     private boolean connected;
-    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 10 threads can access the server at the same time
+    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
     public ClientThread ( int port , int id , int freq ) {
         this.port = port;
         this.id = id;
@@ -44,7 +44,7 @@ public class ClientThread extends Thread {
     public int getID () {
         return this.id;
     }
-    public boolean getConnection () {
+    public boolean isConnected () {
         return this.connected;
     }
     public boolean setImDone(boolean bool){
@@ -123,15 +123,17 @@ public class ClientThread extends Thread {
         }
         try {
             serverAccess.acquire();
+            socket = new Socket("localhost", port);
+
+            out = new DataOutputStream(socket.getOutputStream()); // Write to the server
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
 
             serverPrintLock.lock();
             WriteLog("", 1); // Writing on server.log
+            out.writeUTF("CLIENT "+ id+" has connected!");
             this.connected = true;
             serverPrintLock.unlock();
 
-            socket = new Socket("localhost", port);
-            out = new DataOutputStream(socket.getOutputStream()); // Write to the server
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -149,11 +151,26 @@ public class ClientThread extends Thread {
             // continue running until the thread is interrupted or stopLiving() returns true
         }
         if (stopLiving()) {
-            System.out.println("\nThis thread is going to finish. " + id + "\n");
-            serverAccess.release();
-            logWrittenLock.lock();
-            WriteLog("", 2);
-            logWrittenLock.unlock();
+            try {
+                socket = new Socket("localhost", port);
+                out = new DataOutputStream(socket.getOutputStream()); // Write to the server
+                if(this.isConnected()){
+                    out.writeUTF("CLIENT "+ id+ " was killed!");
+                }
+
+                System.out.println("CLIENT "+ id+ " has died!");
+
+                socket.close();
+                logWrittenLock.lock();
+                WriteLog("", 2);
+                logWrittenLock.unlock();
+
+                serverAccess.release();//Faço release do semáforo que está dentro da funçao connectToServer()
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
         }
         try {
             this.connected=false;
