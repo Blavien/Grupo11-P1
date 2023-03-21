@@ -12,7 +12,7 @@ public class FiltroThread implements Runnable {
     private String messagefiltered;
     private String message;
     private String file;
-    private BlockingQueue<String> queue = new LinkedBlockingQueue<>();  //Buffer de memória partilhado
+    private BlockingQueue<String> queue;  //Buffer de memória partilhado
 
     public FiltroThread(BlockingQueue queue, String file) {
         this.queue = queue;

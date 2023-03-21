@@ -9,7 +9,7 @@ public class Main {
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
     public static void main ( String[] args ) {
-        ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize());
+        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -86,18 +86,5 @@ public class Main {
                     clients.clear();//Removes the elements that hold the threads
             }
         }
-    }
-
-    private static int getThreadPoolSize (){
-        int threadpool_size = 0;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("server/Server.config"));
-            threadpool_size = Integer.parseInt(br.readLine());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return threadpool_size;
     }
 }
