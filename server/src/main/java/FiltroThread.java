@@ -5,21 +5,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.lang.Runnable;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class FiltroThread implements Runnable {
     private String messagefiltered;
     private String message;
     private String file;
+    private BlockingQueue<String> queue;  //Buffer de memória partilhado
 
-    public FiltroThread(String message, String file) {
-        this.message = message;
+    public FiltroThread(BlockingQueue queue, String file) {
+        this.queue = queue;
         this.file = file;
     }
 
     public String getFilteredMessage() {
         return messagefiltered;
     }
-    public void filter(){
+    public void filter(String message){
         File filtro = new File(file);
         try {
             Scanner reader = new Scanner(filtro);
@@ -38,6 +41,13 @@ public class FiltroThread implements Runnable {
         }
     }
     public void run() {
-        filter();
+        try {
+            while (true) {
+                String message = queue.take();//Removes from the queue on the serverThread
+                filter(message);//Consumes it - Faz o filtro
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

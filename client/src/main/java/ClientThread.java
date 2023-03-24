@@ -1,8 +1,8 @@
 import java.io.*;
 import java.net.Socket;
 import java.sql.Timestamp;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
@@ -14,6 +14,7 @@ public class ClientThread extends Thread {
     private final int port;
     private final int id;
     private final int freq;
+    private int i;
     private DataOutputStream out;
     private BufferedReader in;
     ReentrantLock writing = new ReentrantLock();
@@ -28,23 +29,23 @@ public class ClientThread extends Thread {
     Condition queueNotFull = queueConditionLock.newCondition();
     ReentrantLock serverPrintLock = new ReentrantLock();
     private ReentrantLock logWrittenLock = new ReentrantLock();
-    private ReentrantLock messageLock = new ReentrantLock();
     private boolean amIDone;
     private boolean connected;
-    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 10 threads can access the server at the same time
+    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
     public ClientThread ( int port , int id , int freq ) {
         this.port = port;
         this.id = id;
         this.freq = freq;
         this.clientThreadQueue = new LinkedBlockingQueue<>();
-        this.queueCapacity = 5;
+        this.queueCapacity = 7;
         this.amIDone = false;
         this.connected = false;
+        this.i= 0;
     }
     public int getID () {
         return this.id;
     }
-    public boolean getConnection () {
+    public boolean isConnected () {
         return this.connected;
     }
     public boolean setImDone(boolean bool){
@@ -100,6 +101,30 @@ public class ClientThread extends Thread {
             logWrittenLock.lock();
             WriteLog(message,3);
             logWrittenLock.unlock();
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void spamMessages (){
+        try {
+            socket = new Socket("localhost", port);
+            out = new DataOutputStream(socket.getOutputStream()); // Write to the server
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
+            serverPrintLock.lock();
+            Random rand = new Random();
+            int randN = rand.nextInt();
+            try {
+
+                out.writeUTF("NEW MSG: CLIENT "+id+":"+randN);
+                //System.out.println("\nMessage sent sucessuflly. ");
+            } finally {
+                serverPrintLock.unlock();
+            }
+            logWrittenLock.lock();
+            WriteLog(Integer.toString(randN),3);
+            logWrittenLock.unlock();
+            socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -111,28 +136,41 @@ public class ClientThread extends Thread {
     public void connectsToServer(Semaphore serverAccess) {
         try {
             clientQueueLock.lock();
-            while (clientThreadQueue.size() == queueCapacity) {
-                System.out.println("Client " + id + " cannot be added to queue. Queue is full. Waiting...");
+            while (clientThreadQueue.size() == queueCapacity ) { //Se a queue tiver cheia
+                if(stopLiving()){break;}
+                System.out.println("Client " + id + " cannot be added to queue. Queue  is full. Waiting...");
                 queueNotFull.await(); // wait until the queue is not full
             }
             clientThreadQueue.offer(this); // add current client thread to queue
+
+           /* while(serverAccess.availablePermits() == 0){//Se o semafóro de acesso ao servidor estiver bloqueado (0)
+                if(stopLiving()){break;}
+                System.out.println("Client " + id + " cannot be added to server. Server capacity  is full. Waiting...");
+                serverNotFull.await();//thread espera
+            }*/
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             clientQueueLock.unlock();
         }
         try {
+            if(serverAccess.availablePermits()==0){
+                System.out.println("Client " + id + " cannot be added to server. Server capacity  is full. Waiting...");
+            }
             serverAccess.acquire();
-
-            serverPrintLock.lock();
-            WriteLog("", 1); // Writing on server.log
-            this.connected = true;
-            serverPrintLock.unlock();
-
             socket = new Socket("localhost", port);
+
             out = new DataOutputStream(socket.getOutputStream()); // Write to the server
             in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
 
+            serverPrintLock.lock();
+            WriteLog("", 1); // Writing on server.log
+            out.writeUTF("CLIENT "+ id+" has connected!");
+            System.out.println("CLIENT " + id + " has connected to the server.");
+            this.connected = true;
+            serverPrintLock.unlock();
+
+            socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -145,15 +183,40 @@ public class ClientThread extends Thread {
      */
     public void run() {
         connectsToServer(serverAccess);
-        while (!Thread.currentThread().isInterrupted() && !stopLiving()) {
+
+        while (!this.isInterrupted() && !stopLiving()) {
             // continue running until the thread is interrupted or stopLiving() returns true
+
+            //************** TESTE - MENSAGENS ********************************
+
+            //Tirar os comentários disto para testar o paralelismo do envio das mensagens
+            /*while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
+                spamMessages();
+                i++;
+            }*/
         }
         if (stopLiving()) {
-            System.out.println("\nThis thread is going to finish. " + id + "\n");
-            serverAccess.release();
-            logWrittenLock.lock();
-            WriteLog("", 2);
-            logWrittenLock.unlock();
+            try {
+                socket = new Socket("localhost", port);
+                out = new DataOutputStream(socket.getOutputStream()); // Write to the server
+                if(this.isConnected()){
+                    serverAccess.release();//Faço release do semáforo que está dentro da funçao connectToServer()
+                    out.writeUTF("CLIENT "+ id+ " was killed!");
+                }
+
+                System.out.println("CLIENT "+ id+ " has died!");
+
+                socket.close();
+                logWrittenLock.lock();
+                WriteLog("", 2);
+                logWrittenLock.unlock();
+                socket.close();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
         }
         try {
             this.connected=false;

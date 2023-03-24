@@ -9,7 +9,7 @@ public class Main {
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
     public static void main ( String[] args ) {
-        ExecutorService executor = Executors.newFixedThreadPool(getThreadPoolSize());
+        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -32,7 +32,7 @@ public class Main {
                     System.out.println("\nFrom which client do you want to send the message to:");
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
-                        if(clients.get(m).getConnection()){
+                        if(clients.get(m).isConnected()){
                             clients.get(m).sendMessage();
                         }else{
                             System.out.println("\nU think u can send a message from an offline client?");
@@ -60,10 +60,10 @@ public class Main {
                     System.out.println("\nInput the client's id that u want to kill:");
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
-                        if(clients.get(clientId).getConnection()){
+                        if(clients.get(clientId).isConnected()){
                             ClientThread client = clients.get(clientId);
                             client.setImDone(true);//Vai avisar a thread para terminar
-                            clients.remove(clientId);
+                            clients.remove(clientId); //remove deste array
                         }else{
                             System.out.println("\nThat client isn't connected to the server.\n");
                         }
@@ -86,18 +86,5 @@ public class Main {
                     clients.clear();//Removes the elements that hold the threads
             }
         }
-    }
-
-    private static int getThreadPoolSize (){
-        int threadpool_size = 0;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("server/Server.config"));
-            threadpool_size = Integer.parseInt(br.readLine());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return threadpool_size;
     }
 }
