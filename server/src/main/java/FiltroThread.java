@@ -19,26 +19,25 @@ public class FiltroThread implements Runnable {
     public String getFilteredMessage() {
         return messagefiltered;
     }
-
-    public void run() {
+    public void filter(){
         File filtro = new File(file);
         try {
             Scanner reader = new Scanner(filtro);
             reader.useDelimiter("[,\\s]+");
             List<String> messages = new ArrayList<>(Arrays.asList(message.split("[,\\s]+")));
-            System.out.println("Palavra " + messages);
             while (reader.hasNext()) {
                 String word = reader.next();
                 while (messages.contains(word)) {
-                    System.out.println("Palavra " + word);
                     messages.remove(word);
-
                 }
             }
             messagefiltered = String.join(" ", messages);
-            System.out.println("Final filtered message: " + messagefiltered);
+            System.out.println("***** " + messagefiltered+ " *****");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void run() {
+        filter();
     }
 }
