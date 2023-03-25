@@ -23,6 +23,7 @@ public class FiltroThread implements Runnable {
         return messagefiltered;
     }
     public void filter(String message){
+
         File filtro = new File(file);
         try {
             Scanner reader = new Scanner(filtro);
@@ -42,12 +43,16 @@ public class FiltroThread implements Runnable {
     }
     public void run() {
         try {
-            while (true) {
-                String message = queue.take();//Removes from the queue on the serverThread
-                filter(message);//Consumes it - Faz o filtro
+            int size=0;
+
+            while(queue.size()!=size) {
+                 String message = queue.take();
+                 filter(message);
             }
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            System.out.println("The queue is empty");
         }
     }
 }

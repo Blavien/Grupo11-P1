@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 
-public class ClientThread extends Thread {
+public class ClientThread extends Thread implements ServerConfigReader {
     private final int port;
     private final int id;
     private final int freq;
@@ -32,12 +32,12 @@ public class ClientThread extends Thread {
     private boolean amIDone;
     private boolean connected;
     private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
-    public ClientThread ( int port , int id , int freq ) {
+    public ClientThread ( int port , int id , int freq ) throws IOException {
         this.port = port;
         this.id = id;
         this.freq = freq;
         this.clientThreadQueue = new LinkedBlockingQueue<>();
-        this.queueCapacity = 7;
+        this.queueCapacity = ServerConfigReader.getQueueCapacity();
         this.amIDone = false;
         this.connected = false;
         this.i= 0;
@@ -116,7 +116,7 @@ public class ClientThread extends Thread {
             int randN = rand.nextInt();
             try {
 
-                out.writeUTF("NEW MSG: CLIENT "+id+":"+randN);
+                out.writeUTF("NEW MSG: CLIENT "+id+":"+" cara teste goodbye");
                 //System.out.println("\nMessage sent sucessuflly. ");
             } finally {
                 serverPrintLock.unlock();
@@ -190,10 +190,10 @@ public class ClientThread extends Thread {
             //************** TESTE - MENSAGENS ********************************
 
             //Tirar os comentários disto para testar o paralelismo do envio das mensagens
-            /*while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
+            while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
                 spamMessages();
                 i++;
-            }*/
+            }
         }
         if (stopLiving()) {
             try {

@@ -4,12 +4,13 @@ import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Main {
+public class Main implements ServerConfigReader{
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
-    public static void main ( String[] args ) {
-        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
+    public static void main ( String[] args ) throws IOException {
+        int threadWorkers = ServerConfigReader.getThreadWorkers();
+        ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -22,6 +23,7 @@ public class Main {
             System.out.println("4. Genocide - Connected or Waiting");
             System.out.println("\nClients alive: "+ clients.size());
             System.out.println("\n\nChoose an option:");
+            System.out.println("\n\n"+threadWorkers);
             int i = in.nextInt();
             switch (i) {
                 case 1:
