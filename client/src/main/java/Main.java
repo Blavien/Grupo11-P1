@@ -29,7 +29,12 @@ public class Main {
                         System.out.println("\nWe don't have any active clients right now, please create some.\n");
                         break;
                     }
-                    System.out.println("\nFrom which client do you want to send the message to:");
+                    System.out.println("\nFrom which client do you want to send the message to:\n");
+                    String msg = "| ";
+                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
+                        msg+= clients.get(l).getID() + " | ";
+                    }
+                    System.out.println("Available users : \n" + msg);
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
                         if(clients.get(m).isConnected()){
