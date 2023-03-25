@@ -62,7 +62,12 @@ public class Main {
                     id_counter += n;
                     break;
                 case 3:
-                    System.out.println("\nInput the client's id that u want to kill:");
+                    String message = " | ";
+                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
+                        message+= clients.get(l).getID() + " | ";
+                    }
+                    System.out.println("\nInput the client's id that u want to kill:\n");
+                    System.out.println("Available users: " + message);
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
                         if(clients.get(clientId).isConnected()){
