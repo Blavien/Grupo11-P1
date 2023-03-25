@@ -31,6 +31,7 @@ public class ClientThread extends Thread {
     private ReentrantLock logWrittenLock = new ReentrantLock();
     private boolean amIDone;
     private boolean connected;
+    private int randomAux;
     private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
     public ClientThread ( int port , int id , int freq ) {
         this.port = port;
@@ -51,6 +52,9 @@ public class ClientThread extends Thread {
     public boolean setImDone(boolean bool){
         return this.amIDone = bool;
     }
+    public Timestamp getTimeStamp(){
+        return timestamp;
+    }
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
      * @param event are the many possible events that a client can write in the server.log
@@ -60,9 +64,11 @@ public class ClientThread extends Thread {
      *              <timestamp> - Action : <type of action> - <Id of the client> - message
      *
      */
+
+
     public void WriteLog(String msg, int event){
         synchronized (writing){
-            try (FileWriter fw = new FileWriter("server/Server.log", true)) {
+            try (FileWriter fw = new FileWriter("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log", true)) {
                 switch (event) {
                     case 1 -> { //Connected to the server
                         fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
@@ -105,6 +111,7 @@ public class ClientThread extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
     public void spamMessages (){
         try {
@@ -114,6 +121,7 @@ public class ClientThread extends Thread {
             serverPrintLock.lock();
             Random rand = new Random();
             int randN = rand.nextInt();
+            setRandNum(randN);
             try {
 
                 out.writeUTF("NEW MSG: CLIENT "+id+":"+randN);
@@ -129,6 +137,13 @@ public class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
     }
+    public void setRandNum(int x){
+        randomAux=x;
+    }
+    public int getRandNum(){
+        return randomAux;
+    }
+
 
     public boolean stopLiving(){
         return amIDone;
