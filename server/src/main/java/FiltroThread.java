@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.lang.Runnable;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+
 
 public class FiltroThread implements Runnable {
     private String messagefiltered;

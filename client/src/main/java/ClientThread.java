@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.*;
 import java.sql.Timestamp;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 
-public class ClientThread extends Thread implements ServerConfigReader {
+public class ClientThread extends Thread {
     private final int port;
     private final int id;
     private final int freq;
@@ -32,16 +34,17 @@ public class ClientThread extends Thread implements ServerConfigReader {
     private boolean amIDone;
     private boolean connected;
 
-    private static  Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
+    private  static  Semaphore serverAccess; // Maximum of 10 threads can access the server at the same time
 
-   /* static {
+    static {
         try {
-            serverAccess = new Semaphore(ServerConfigReader.getVariable("queue_capacity"));
+            serverAccess = new Semaphore(ServerConfigReader.getVariable("FINAL_MAX_CLIENTS"));
         } catch (IOException e) {
-            serverAccess=new Semaphore(3);
             throw new RuntimeException(e);
         }
-    }*/
+    }
+
+
 
     public ClientThread ( int port , int id , int freq ) throws IOException {
         this.port = port;
@@ -96,6 +99,7 @@ public class ClientThread extends Thread implements ServerConfigReader {
 
     public void sendMessage (){
         try {
+
             socket = new Socket("localhost", port);
             out = new DataOutputStream(socket.getOutputStream()); // Write to the server
             in = new BufferedReader(new InputStreamReader(socket.getInputStream())); // Write to console
@@ -113,6 +117,7 @@ public class ClientThread extends Thread implements ServerConfigReader {
             WriteLog(message,3);
             logWrittenLock.unlock();
             socket.close();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -201,10 +206,10 @@ public class ClientThread extends Thread implements ServerConfigReader {
             //************** TESTE - MENSAGENS ********************************
 
             //Tirar os comentários disto para testar o paralelismo do envio das mensagens
-            while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
+           /* while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
                 spamMessages();
                 i++;
-            }
+            }*/
         }
         if (stopLiving()) {
             try {
@@ -237,4 +242,5 @@ public class ClientThread extends Thread implements ServerConfigReader {
         }
 
     }
+
 }
