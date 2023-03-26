@@ -4,18 +4,13 @@ import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Main {
+public class Main implements ServerConfigReader {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
-
-    /**
-     * The main is the menu of the client, it is where you can choose the options that lets you interact with the
-     * server
-     * @param args
-     */
-    public static void main ( String[] args ) {
-        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
+    public static void main ( String[] args ) throws IOException {
+        int threadWorkers = ServerConfigReader.getVariable("n_thread_workers");
+        ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -35,12 +30,7 @@ public class Main {
                         System.out.println("\nWe don't have any active clients right now, please create some.\n");
                         break;
                     }
-                    System.out.println("\nFrom which client do you want to send the message to:\n");
-                    String msg = "| ";
-                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        msg+= clients.get(l).getID() + " | ";
-                    }
-                    System.out.println("Available users : \n" + msg);
+                    System.out.println("\nFrom which client do you want to send the message to:");
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
                         if(clients.get(m).isConnected()){
@@ -68,12 +58,7 @@ public class Main {
                     id_counter += n;
                     break;
                 case 3:
-                    String message = " | ";
-                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        message+= clients.get(l).getID() + " | ";
-                    }
-                    System.out.println("\nInput the client's id that u want to kill:\n");
-                    System.out.println("Available users: " + message);
+                    System.out.println("\nInput the client's id that u want to kill:");
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
                         if(clients.get(clientId).isConnected()){
