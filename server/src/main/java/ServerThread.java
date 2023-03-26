@@ -15,6 +15,7 @@ public class ServerThread extends Thread {
     private Socket socket;
 
 
+
     public ServerThread ( int port ) {
         this.port = port;
         try {
@@ -49,6 +50,8 @@ public class ServerThread extends Thread {
         private DataInputStream in;
         private PrintWriter out;
 
+        private static  BlockingQueue producer = new LinkedBlockingQueue();;
+
         public RequestHandler(Socket socket, DataInputStream in, PrintWriter out) {
             this.socket = socket;
             this.in = in;
@@ -60,8 +63,8 @@ public class ServerThread extends Thread {
             try{
                 String message = in.readUTF();//Gets the messsage from the client
 
-                BlockingQueue producer = new LinkedBlockingQueue();
-                producer.put(message);//Puts in on a queue
+
+                producer.put(message);//Puts in on test.txt queue
 
                 FiltroThread consumer = new FiltroThread(producer,"server/filtro.txt");//It's gonna consume that message
                 consumer.run();

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.lang.Runnable;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+
 
 public class FiltroThread implements Runnable {
     private String messagefiltered;
@@ -34,6 +34,7 @@ public class FiltroThread implements Runnable {
      * @param message this variable is the message sent by the user, is the one that is going to be filtered
      */
     public void filter(String message){
+
         File filtro = new File(file);
         try {
             Scanner reader = new Scanner(filtro);
@@ -53,12 +54,16 @@ public class FiltroThread implements Runnable {
     }
     public void run() {
         try {
-            while (true) {
-                String message = queue.take();//Removes from the queue on the serverThread
-                filter(message);//Consumes it - Faz o filtro
+            int size=0;
+
+            while(queue.size()!=size) {
+                 String message = queue.take();
+                 filter(message);
             }
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            System.out.println("The queue is empty");
         }
     }
 }
