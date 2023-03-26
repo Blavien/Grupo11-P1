@@ -9,7 +9,7 @@ public class Main implements ServerConfigReader{
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
     public static void main ( String[] args ) throws IOException {
-        int threadWorkers = ServerConfigReader.getThreadWorkers();
+        int threadWorkers = ServerConfigReader.getVariable("n_thread_workers");
         ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
@@ -23,7 +23,6 @@ public class Main implements ServerConfigReader{
             System.out.println("4. Genocide - Connected or Waiting");
             System.out.println("\nClients alive: "+ clients.size());
             System.out.println("\n\nChoose an option:");
-            System.out.println("\n\n"+threadWorkers);
             int i = in.nextInt();
             switch (i) {
                 case 1:

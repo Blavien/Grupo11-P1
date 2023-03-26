@@ -31,13 +31,24 @@ public class ClientThread extends Thread implements ServerConfigReader {
     private ReentrantLock logWrittenLock = new ReentrantLock();
     private boolean amIDone;
     private boolean connected;
-    private static final Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
+
+    private static  Semaphore serverAccess = new Semaphore(3); // Maximum of 3 threads can access the server at the same time
+
+   /* static {
+        try {
+            serverAccess = new Semaphore(ServerConfigReader.getVariable("queue_capacity"));
+        } catch (IOException e) {
+            serverAccess=new Semaphore(3);
+            throw new RuntimeException(e);
+        }
+    }*/
+
     public ClientThread ( int port , int id , int freq ) throws IOException {
         this.port = port;
         this.id = id;
         this.freq = freq;
         this.clientThreadQueue = new LinkedBlockingQueue<>();
-        this.queueCapacity = ServerConfigReader.getQueueCapacity();
+        this.queueCapacity = ServerConfigReader.getVariable("queue_capacity");
         this.amIDone = false;
         this.connected = false;
         this.i= 0;
