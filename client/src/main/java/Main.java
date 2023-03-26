@@ -8,6 +8,12 @@ public class Main {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
+
+    /**
+     * The main is the menu of the client, it is where you can choose the options that lets you interact with the
+     * server
+     * @param args
+     */
     public static void main ( String[] args ) {
         ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;

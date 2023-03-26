@@ -19,9 +19,20 @@ public class FiltroThread implements Runnable {
         this.file = file;
     }
 
+    /**
+     * This method returns the message filtered, which is the message after the process of the filter, that means
+     * that is the message sent to a client but without the words written in the file "filtro.txt"
+     * @return
+     */
     public String getFilteredMessage() {
         return messagefiltered;
     }
+
+    /**
+     * This method is used to filter the message, it gets the message that the user wants to send to the client,
+     * deletes the words matching "filtro.txt" file and then stores the final string in the variable "messageFiltered"
+     * @param message this variable is the message sent by the user, is the one that is going to be filtered
+     */
     public void filter(String message){
         File filtro = new File(file);
         try {

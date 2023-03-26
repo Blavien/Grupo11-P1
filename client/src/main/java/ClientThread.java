@@ -43,15 +43,39 @@ public class ClientThread extends Thread {
         this.connected = false;
         this.i= 0;
     }
+
+    /**
+     * This method returns the id from the client
+     *
+     * @return
+     */
     public int getID () {
         return this.id;
     }
+
+    /**
+     * This method returns the boolean "connected" which informs the state of the client (if it is connected or not)
+     * @return
+     */
     public boolean isConnected () {
         return this.connected;
     }
+
+    /**
+     * this method works as a setter and getter, at the same time it changes the value of the variable "amIDone"
+     * it also returns its changed value
+     * @param bool a boolean that is used to change the value of the boolean amIDone
+     * @return
+     */
     public boolean setImDone(boolean bool){
         return this.amIDone = bool;
     }
+
+    /**
+     * getTimeStamp method is used to return the value of the variable timestamp, in this case, it is used only in
+     * unit tests
+     * @return
+     */
     public Timestamp getTimeStamp(){
         return timestamp;
     }
@@ -89,6 +113,12 @@ public class ClientThread extends Thread {
         }
     }
 
+    /**
+     * sendMessage method is used to send a message to a user, it is called in client/main and writes a message
+     * to the respective user
+     * This method connects to the socket then it asks for the message that the user wants to send to the client
+     * It sends the message to the client then the socket is closed
+     */
     public void sendMessage (){
         try {
             socket = new Socket("localhost", port);
@@ -113,6 +143,16 @@ public class ClientThread extends Thread {
         }
 
     }
+
+
+    /**
+     *
+     *This method is mainly used to see if the task pool is working, in order to do that, this method is repeatedly
+     * called in order to see if the server lets you keep interacting with it.
+     * spamMessages just sends random sequences of numbers, it is similar to the method sendMessage but instead of
+     * scanning the user input, it randomly sends the message
+     *
+     */
     public void spamMessages (){
         try {
             socket = new Socket("localhost", port);
@@ -137,17 +177,39 @@ public class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
     }
-    public void setRandNum(int x){
-        randomAux=x;
+
+    /**
+     * This method is used to change the value of the variable randomAux, it is used to store the random number
+     * that is generated in the spamMessages method.
+     * It is only used in the unit test of spamMessages method.
+     * @param rand
+     */
+    public void setRandNum(int rand){
+        randomAux=rand;
     }
+
+    /**
+     * getRandNum method is used to get the value of the variable randomAux, it is just used in unit testing of
+     * the spamMessages method
+     * @return
+     */
     public int getRandNum(){
         return randomAux;
     }
 
-
+    /**
+     * stopLiving method is used to get the value of the variable "amIDone" that is used to define if a thread
+     * should "die", so, if its value is true the thread should end
+     * @return
+     */
     public boolean stopLiving(){
         return amIDone;
     }
+
+    /**
+     * connectsToServer method is used to implement the threadpool and connect the threads to the server
+     * @param serverAccess is the semaphore that is used to limit the number of threads inside the server
+     */
     public void connectsToServer(Semaphore serverAccess) {
         try {
             clientQueueLock.lock();
@@ -195,6 +257,9 @@ public class ClientThread extends Thread {
 
     /**
      * Here we have a thread/task pool and the task we want to submit is the connection to the server
+     * It is used to start the threads
+     *
+     *
      */
     public void run() {
         connectsToServer(serverAccess);
