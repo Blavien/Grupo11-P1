@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,6 +22,8 @@ public class Main implements ServerConfigReader {
             System.out.println("2. Create new clients");
             System.out.println("3. End a client's life");
             System.out.println("4. Genocide - Connected or Waiting");
+            System.out.println("5. Change the file Server.config");
+            System.out.println("Change ");
             System.out.println("\nClients alive: "+ clients.size());
             System.out.println("\n\nChoose an option:");
             int i = in.nextInt();
@@ -33,9 +36,9 @@ public class Main implements ServerConfigReader {
                     System.out.println("\nFrom which client do you want to send the message to:");
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
-                        if(clients.get(m).isConnected()){
+                        if (clients.get(m).isConnected()) {
                             clients.get(m).sendMessage();
-                        }else{
+                        } else {
                             System.out.println("\nU think u can send a message from an offline client?");
                         }
 
@@ -61,11 +64,11 @@ public class Main implements ServerConfigReader {
                     System.out.println("\nInput the client's id that u want to kill:");
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
-                        if(clients.get(clientId).isConnected()){
+                        if (clients.get(clientId).isConnected()) {
                             ClientThread client = clients.get(clientId);
                             client.setImDone(true);//Vai avisar a thread para terminar
                             clients.remove(clientId); //remove deste array
-                        }else{
+                        } else {
                             System.out.println("\nThat client isn't connected to the server.\n");
                         }
                     } else {
@@ -78,13 +81,50 @@ public class Main implements ServerConfigReader {
                         break;
                     }
                     for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        if(clients.get(l) != null){
+                        if (clients.get(l) != null) {
                             clients.get(l).setImDone(true); //Avisam para terminar estas thread
-                        }else{
+                        } else {
                             continue;
                         }
                     }
                     clients.clear();//Removes the elements that hold the threads
+
+                case 5:
+                    Scanner scanner = new Scanner(System.in);
+
+                    while (true) {
+                        System.out.print("Digite o nome da variável que deseja alterar: ");
+                        String variable = scanner.nextLine();
+                    if (variable.equals("FINAL_MAX_CLIENTS")) {
+                        System.out.println("A variável FINAL_MAX_CLIENTS não pode ser alterada.");
+                        break;
+                    }
+                        if(variable.equals("n_thread_workers")||variable.equals("queue_capacity")) {
+                            System.out.print("\nDigite um novo valor inteiro " + variable + ": ");
+
+                            while (true) {
+                                if (scanner.hasNextInt()) {
+                                    int value = scanner.nextInt();
+                                    try {
+                                        String valueS = Integer.toString(value);
+                                        ServerConfigReader.setVariable(variable, valueS);
+                                        System.out.println("O valor da variável " + variable + " foi atualizado para " + value + " com sucesso!");
+                                    } catch (IOException e) {
+                                        System.out.println("ERROR " + e.getMessage());
+                                    }
+                                    break;
+                                } else {
+                                    System.out.println("Insira um numero ");
+                                    scanner.next();
+                                }
+
+                            }
+                            break;
+                        }
+                        else{
+                            System.out.println("\nInsira um nome valido ");
+                        }
+                    }
             }
         }
     }
