@@ -60,7 +60,7 @@ public class ClientThread extends Thread {
     /**
      * This method returns the id from the client
      *
-     * @return
+     * @return id
      */
     public int getID () {
         return this.id;
@@ -68,7 +68,7 @@ public class ClientThread extends Thread {
 
     /**
      * This method returns the boolean "connected" which informs the state of the client (if it is connected or not)
-     * @return
+     * @return connected status
      */
     public boolean isConnected () {
         return this.connected;
@@ -78,7 +78,7 @@ public class ClientThread extends Thread {
      * this method works as a setter and getter, at the same time it changes the value of the variable "amIDone"
      * it also returns its changed value
      * @param bool a boolean that is used to change the value of the boolean amIDone
-     * @return
+     * @return is done variable
      */
     public boolean setImDone(boolean bool){
         return this.amIDone = bool;
@@ -87,7 +87,7 @@ public class ClientThread extends Thread {
     /**
      * getTimeStamp method is used to return the value of the variable timestamp, in this case, it is used only in
      * unit tests
-     * @return
+     * @return initialized timestamp
      */
     public Timestamp getTimeStamp(){
         return timestamp;
@@ -104,9 +104,12 @@ public class ClientThread extends Thread {
 
 
     public void WriteLog(String msg, int event){
+
+
         synchronized (writing){
             try (FileWriter fw = new FileWriter("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log", true)) {
                 switch (event) {
+
                     case 1 -> { //Connected to the server
                         fw.append(timestamp + " - Action : CONNECTED - CLIENT ID:" + id + "\n");
                     }
@@ -203,7 +206,7 @@ public class ClientThread extends Thread {
     /**
      * getRandNum method is used to get the value of the variable randomAux, it is just used in unit testing of
      * the spamMessages method
-     * @return
+     * @return random number
      */
     public int getRandNum(){
         return randomAux;
@@ -212,7 +215,7 @@ public class ClientThread extends Thread {
     /**
      * stopLiving method is used to get the value of the variable "amIDone" that is used to define if a thread
      * should "die", so, if its value is true the thread should end
-     * @return
+     * @return amIDone variable
      */
     public boolean stopLiving(){
         return amIDone;
