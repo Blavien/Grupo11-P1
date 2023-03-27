@@ -1,15 +1,16 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main implements ServerConfigReader {
     private static final ReentrantLock lock = new ReentrantLock();
+
+    private static final String file = "C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\filtro.txt";
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
-    public static void main ( String[] args ) throws IOException {
+
+    public static void main(String[] args) throws IOException {
         int threadWorkers = ServerConfigReader.getVariable("n_thread_workers");
         ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
@@ -23,8 +24,10 @@ public class Main implements ServerConfigReader {
             System.out.println("3. End a client's life");
             System.out.println("4. Genocide - Connected or Waiting");
             System.out.println("5. Change the file Server.config");
+            System.out.println("6. Add Words from filtro.txt");
+            System.out.println("7. Remove Words from filtro.txt");
             System.out.println("Change ");
-            System.out.println("\nClients alive: "+ clients.size());
+            System.out.println("\nClients alive: " + clients.size());
             System.out.println("\n\nChoose an option:");
             int i = in.nextInt();
             switch (i) {
@@ -93,14 +96,22 @@ public class Main implements ServerConfigReader {
                     Scanner scanner = new Scanner(System.in);
 
                     while (true) {
-                        System.out.print("Digite o nome da variável que deseja alterar: ");
+                        System.out.println("Digite o nome da variável que deseja alterar: ");
+                        System.out.println("Para sair escreva:sair ");
+                        System.out.print(":");
                         String variable = scanner.nextLine();
-                    if (variable.equals("FINAL_MAX_CLIENTS")) {
-                        System.out.println("A variável FINAL_MAX_CLIENTS não pode ser alterada.");
-                        break;
-                    }
-                        if(variable.equals("n_thread_workers")||variable.equals("queue_capacity")) {
+                        if (variable.equals("FINAL_MAX_CLIENTS")) {
+                            System.out.println("A variável FINAL_MAX_CLIENTS não pode ser alterada.");
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        }
+                        if (variable.equals("n_thread_workers") || variable.equals("queue_capacity")) {
                             System.out.print("\nDigite um novo valor inteiro " + variable + ": ");
+
 
                             while (true) {
                                 if (scanner.hasNextInt()) {
@@ -121,10 +132,25 @@ public class Main implements ServerConfigReader {
                             }
                             break;
                         }
-                        else{
-                            System.out.println("\nInsira um nome valido ");
+
+                        if(variable.equals("sair")){
+
+                            System.out.println("\n Saiu desta opcção");
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        }
+                        else {
+                            System.out.println("\n Insira um nome valido ");
+
                         }
                     }
+                    break;
+                case 6:
+                  break;
             }
         }
     }

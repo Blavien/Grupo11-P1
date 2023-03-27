@@ -21,7 +21,7 @@ public class ServerThread extends Thread {
         try {
             server = new ServerSocket ( this.port );
         } catch ( IOException e ) {
-            e.printStackTrace ( );
+            e.getMessage ( );
         }
     }
 
@@ -45,7 +45,7 @@ public class ServerThread extends Thread {
             }
         }
     }
-    private class RequestHandler implements Runnable {
+    class RequestHandler implements Runnable {
         private Socket socket;
         private DataInputStream in;
         private PrintWriter out;
@@ -58,7 +58,6 @@ public class ServerThread extends Thread {
             this.out= out;
         }
 
-        @Override
         public void run() {
             try{
                 String message = in.readUTF();//Gets the messsage from the client
@@ -83,4 +82,5 @@ public class ServerThread extends Thread {
             }
         }
     }
+
 }

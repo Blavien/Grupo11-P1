@@ -28,7 +28,7 @@ public interface ServerConfigReader {
         properties.setProperty(variable, value);
         FileOutputStream outputStream = new FileOutputStream("C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\Server.config");
         try {
-            properties.store(outputStream,value);
+            properties.store(outputStream,variable+"="+value);
         } finally {
             outputStream.close();
         }

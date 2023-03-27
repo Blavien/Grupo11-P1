@@ -73,7 +73,7 @@ class FiltroThreadTest {
     }
     @Test
     @DisplayName("test if exist IO")
-    void IOException() throws IOException, InterruptedException {
+    void IOException() throws  InterruptedException {
         FiltroThread filtro1 = new FiltroThread(producer, "C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\test.tx");
         String message = "Hello World";
         producer.put(message);

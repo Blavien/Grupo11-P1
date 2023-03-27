@@ -24,17 +24,17 @@ public class FiltroThread implements Runnable {
     }
     public void filter(String message){
 
-        File filtro = new File(file);
-        try {
-            Scanner reader = new Scanner(filtro);
-            reader.useDelimiter("[,\\s]+");
-            List<String> messages = new ArrayList<>(Arrays.asList(message.split("[,\\s]+")));
-            while (reader.hasNext()) {
-                String word = reader.next();
-                while (messages.contains(word)) {
-                    messages.remove(word);
+            File filtro = new File(file);
+            try {
+                Scanner reader = new Scanner(filtro);
+                reader.useDelimiter("[,\\s]+");
+                List<String> messages = new ArrayList<>(Arrays.asList(message.split("[,\\s]+")));
+                while (reader.hasNext()) {
+                    String word = reader.next();
+                    while (messages.contains(word)) {
+                        messages.remove(word);
+                    }
                 }
-            }
             messagefiltered = String.join(" ", messages);
             System.out.println("***** " + messagefiltered+ " *****");
         } catch (IOException e) {
