@@ -54,7 +54,6 @@ class ClientThreadTest {
     @org.junit.jupiter.api.Test
     @DisplayName("Test writeLog method and its possibilities")
     void writeLog() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 3 , 10 );
         clientThread.WriteLog("bla",1);
         Timestamp timestamp = clientThread.getTimeStamp();
         assertEquals(timestamp + " - Action : CONNECTED - CLIENT ID:" + clientThread.getID() + "\n",leitorUltimaLinha() + "\n");
@@ -78,7 +77,6 @@ class ClientThreadTest {
     }
     @org.junit.jupiter.api.Test
     void setGetRandNum() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 8 , 10 );
         clientThread.setRandNum(4);
         assertEquals(4,clientThread.getRandNum());
         clientThread.setRandNum(7);
