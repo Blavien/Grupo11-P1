@@ -11,6 +11,7 @@ class FiltroThreadTest {
     private FiltroThread filtro;
 
     @BeforeEach
+    @DisplayName("Use before all of tests")
     void setUp() {
         this.producer = new LinkedBlockingQueue<>();
         this.filtro = new FiltroThread(producer, "C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\test.txt");
