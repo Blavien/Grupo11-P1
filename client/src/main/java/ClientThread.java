@@ -290,10 +290,10 @@ public class ClientThread extends Thread {
             //************** TESTE - MENSAGENS ********************************
 
             //Tirar os comentários disto para testar o paralelismo do envio das mensagens
-           /* while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
+            while(i != 10){//Cada thread manda 10 mensagens logo de inicio para não arrebentar o server
                 spamMessages();
                 i++;
-            }*/
+            }
         }
         if (stopLiving()) {
             try {

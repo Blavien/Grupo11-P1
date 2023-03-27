@@ -13,7 +13,7 @@ class FiltroThreadTest {
     @BeforeEach
     void setUp() {
         this.producer = new LinkedBlockingQueue<>();
-        this.filtro = new FiltroThread(producer, "C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\test.txt");
+        this.filtro = new FiltroThread(producer, "C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\test.txt");
 
     }
 
@@ -75,7 +75,7 @@ class FiltroThreadTest {
     @Test
     @DisplayName("test if exist IO")
     void IOException() throws IOException, InterruptedException {
-        FiltroThread filtro1 = new FiltroThread(producer, "C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\test.tx");
+        FiltroThread filtro1 = new FiltroThread(producer, "C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\test.txt");
         String message = "Hello World";
         producer.put(message);
         filtro1.run();

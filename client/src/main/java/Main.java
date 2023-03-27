@@ -49,13 +49,8 @@ public class Main implements ServerConfigReader {
                         break;
                     }
                     System.out.println("\nFrom which client do you want to send the message to:");
-                    String msg = " | ";
-                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        if (clients.containsKey(clients.get(l).getID())) {
-                            msg += clients.get(l).getID() + " | ";
-                        }
-                    }
-                    System.out.println("Available users: " + msg);
+
+
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
                         if (clients.get(m).isConnected()) {
@@ -122,14 +117,22 @@ public class Main implements ServerConfigReader {
                     Scanner scanner = new Scanner(System.in);
 
                     while (true) {
-                        System.out.print("Digite o nome da variável que deseja alterar: ");
+                        System.out.println("Digite o nome da variável que deseja alterar: ");
+                        System.out.println("Para sair escreva:sair ");
+                        System.out.print(":");
                         String variable = scanner.nextLine();
                         if (variable.equals("FINAL_MAX_CLIENTS")) {
                             System.out.println("A variável FINAL_MAX_CLIENTS não pode ser alterada.");
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                             break;
                         }
                         if (variable.equals("n_thread_workers") || variable.equals("queue_capacity")) {
                             System.out.print("\nDigite um novo valor inteiro " + variable + ": ");
+
 
                             while (true) {
                                 if (scanner.hasNextInt()) {
@@ -149,10 +152,24 @@ public class Main implements ServerConfigReader {
 
                             }
                             break;
-                        } else {
-                            System.out.println("\nInsira um nome valido ");
+                        }
+                        //variable = scanner.nextLine().toLowerCase().replaceAll("\\s", "");
+                        if(variable.equals("sair")){
+
+                            System.out.println("\n Saiu desta opcção");
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        }
+                        else {
+                            System.out.println("\n Insira um nome valido ");
+
                         }
                     }
+                    break;
 
             }
         }
