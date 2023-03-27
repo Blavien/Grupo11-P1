@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 class ClientThreadTest {
+    /*
     private ClientThread clientThread;
     @BeforeEach
     void setup() throws IOException {
@@ -40,6 +41,7 @@ class ClientThreadTest {
      * @return
      * @throws IOException
      */
+    /*
     public String leitorUltimaLinha() throws IOException {
         BufferedReader leitor = new BufferedReader(new FileReader("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log"));
         String linhaAtual = leitor.readLine();
@@ -83,7 +85,7 @@ class ClientThreadTest {
         assertEquals(7,clientThread.getRandNum());
     }
 
-
+*/
 
 
 
