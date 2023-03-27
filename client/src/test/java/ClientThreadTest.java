@@ -11,24 +11,30 @@ class ClientThreadTest {
 
     @org.junit.jupiter.api.Test
 
-    void getID() {
+    void getID() throws IOException {
         ClientThread clientThread = new ClientThread(8888, 15 , 10 );
         assertEquals(15,clientThread.getID());
     }
 
     @org.junit.jupiter.api.Test
-    void setImDone() {
+    void setImDone() throws IOException {
         ClientThread clientThread = new ClientThread(8888, 1 , 10 );
 
         assertEquals(true,clientThread.setImDone(true));
     }
 
     @org.junit.jupiter.api.Test
-    void stopLiving() {
+    void stopLiving() throws IOException {
         ClientThread clientThread = new ClientThread(8888, 2 , 10 );
         assertEquals(false,clientThread.stopLiving());
     }
 
+    /**
+     * This method is used to help other unit tests that are related to reading strings from the log, in this case
+     * the last line
+     * @return
+     * @throws IOException
+     */
     public String leitorUltimaLinha() throws IOException {
         BufferedReader leitor = new BufferedReader(new FileReader("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log"));
         String linhaAtual = leitor.readLine();
@@ -57,11 +63,7 @@ class ClientThreadTest {
         Timestamp timestamp4 = clientThread.getTimeStamp();
         assertEquals(timestamp4 + " - Action : WAITING - CLIENT ID:" + clientThread.getID() + "\n",leitorUltimaLinha() + "\n");
     }
-    @org.junit.jupiter.api.Test
-    void sendMessage() {
-        ClientThread clientThread = new ClientThread(8888, 6 , 10 );
-        clientThread.sendMessage();
-    }
+
 
     @org.junit.jupiter.api.Test
     void spamMessages() throws IOException {
@@ -71,7 +73,7 @@ class ClientThreadTest {
         assertEquals(timestamp + " - Action : MESSAGE - CLIENT ID:"+clientThread.getID()+" - "+ clientThread.getRandNum(),leitorUltimaLinha());
     }
     @org.junit.jupiter.api.Test
-    void setGetRandNum() {
+    void setGetRandNum() throws IOException {
         ClientThread clientThread = new ClientThread(8888, 8 , 10 );
         clientThread.setRandNum(4);
         assertEquals(4,clientThread.getRandNum());

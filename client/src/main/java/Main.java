@@ -8,9 +8,14 @@ public class Main implements ServerConfigReader {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
     private static final Scanner in = new Scanner(System.in);
+
+    /**
+     * The main is the menu of the client, it is where you can choose the options that lets you interact with the
+     * server
+     * @param args
+     */
     public static void main ( String[] args ) throws IOException {
-        int threadWorkers = ServerConfigReader.getVariable("n_thread_workers");
-        ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
+        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -58,7 +63,12 @@ public class Main implements ServerConfigReader {
                     id_counter += n;
                     break;
                 case 3:
-                    System.out.println("\nInput the client's id that u want to kill:");
+                    String message = " | ";
+                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
+                        message+= clients.get(l).getID() + " | ";
+                    }
+                    System.out.println("\nInput the client's id that u want to kill:\n");
+                    System.out.println("Available users: " + message);
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
                         if(clients.get(clientId).isConnected()){
