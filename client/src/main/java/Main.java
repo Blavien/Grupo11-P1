@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.io.*;
+import java.util.*;
 
 /**
  * Main Class that provides a menu to control the client threads
@@ -21,8 +23,6 @@ public class Main implements ServerConfigReader {
         ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
-        ClientThread clientThread = new ClientThread(8888, 15 , 10 );
-        executor.submit(clientThread);
         while (menu) {
             System.out.print("\033[H\033[2J"); // clear console
             System.out.flush();
@@ -31,6 +31,7 @@ public class Main implements ServerConfigReader {
             System.out.println("2. Create new clients");
             System.out.println("3. End a client's life");
             System.out.println("4. Genocide - Connected or Waiting");
+            System.out.println("5. Remove one word from the filter");
             System.out.println("\nClients alive: "+ clients.size());
             System.out.println("\n\nChoose an option:");
             int i = in.nextInt();
@@ -43,7 +44,9 @@ public class Main implements ServerConfigReader {
                     System.out.println("\nFrom which client do you want to send the message to:");
                     String msg = " | ";
                     for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        msg+= clients.get(l).getID() + " | ";
+                        if (clients.containsKey(clients.get(l).getID())) {
+                            msg += clients.get(l).getID() + " | ";
+                        }
                     }
                     System.out.println("Available users: " + msg);
                     int m = in.nextInt();
@@ -73,10 +76,6 @@ public class Main implements ServerConfigReader {
                     id_counter += n;
                     break;
                 case 3:
-                    String message2 = " | ";
-                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        message2+= clients.get(l).getID() + " | ";
-                    }
                     System.out.println("\nInput the client's id that u want to kill:\n");
                     System.out.println("Available users: " + message2);
                     int clientId = in.nextInt();
@@ -105,7 +104,46 @@ public class Main implements ServerConfigReader {
                         }
                     }
                     clients.clear();//Removes the elements that hold the threads
+                    break;
+                case 5:
+                    removePalavrasFiltro();
             }
         }
     }
-}
+
+    public static void removePalavrasFiltro(){
+        try {
+            // Lê o conteúdo do arquivo "filtro.txt" e guarda as palavras em um array
+            Scanner scanner = new Scanner(new File("server/filtro.txt"));
+            String content = scanner.useDelimiter("\\Z").next();
+            String[] words = content.split("\\s+");
+
+            // Pede ao usuário que insira uma palavra
+            Scanner input = new Scanner(System.in);
+            System.out.println("Insira uma palavra:");
+            String wordToRemove = input.nextLine();
+
+            // Remove as palavras do array que são iguais à palavra fornecida pelo usuário
+            List<String> filteredWords = new ArrayList<String>();
+            for (String word : words) {
+                if (!word.equals(wordToRemove)) {
+                    filteredWords.add(word);
+                }
+            }
+
+            // Reescreve as palavras restantes no arquivo "filtro.txt"
+            FileWriter writer = new FileWriter("server/filtro.txt");
+            for (String word : filteredWords) {
+                writer.write(word + " ");
+            }
+            writer.close();
+
+            System.out.println("Operação concluída com sucesso.");
+        } catch (FileNotFoundException e) {
+            System.out.println("O arquivo 'filtro.txt' não foi encontrado.");
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro ao tentar escrever no arquivo 'filtro.txt'.");
+        }
+    }
+    }
+
