@@ -113,6 +113,7 @@ public class Main implements ServerConfigReader {
                     break;
                 case 6:
                     adicionaPalavrasFiltro();
+                    break;
             }
 
         }
