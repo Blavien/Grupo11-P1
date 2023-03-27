@@ -24,6 +24,7 @@ class ClientThreadTest {
     }
 
     @org.junit.jupiter.api.Test
+    @DisplayName("amIDone setter")
     void setImDone(){
 
 
@@ -31,6 +32,7 @@ class ClientThreadTest {
     }
 
     @org.junit.jupiter.api.Test
+    @DisplayName("amIDone getter")
     void stopLiving() {
         assertEquals(false,clientThread.stopLiving());
     }
@@ -67,12 +69,14 @@ class ClientThreadTest {
 
 
     @org.junit.jupiter.api.Test
+    @DisplayName("test of the spamming messages method")
     void spamMessages() throws IOException {
         clientThread.spamMessages();
         Timestamp timestamp = clientThread.getTimeStamp();
         assertEquals(timestamp + " - Action : MESSAGE - CLIENT ID:"+clientThread.getID()+" - "+ clientThread.getRandNum(),leitorUltimaLinha());
     }
     @org.junit.jupiter.api.Test
+    @DisplayName("Testing getter and setter of the RandNum variable")
     void setGetRandNum() throws IOException {
         clientThread.setRandNum(4);
         assertEquals(4,clientThread.getRandNum());

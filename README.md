@@ -14,4 +14,6 @@ Caso ocorram erros envolvendo caminhos, deve alterar os caminhos nos seguintes m
     main do server
     run do serverThread
 
+    Os testes unitários não passam nas github actions porém se comentarmos os mesmos, o javaDOC é gerado
+
     
