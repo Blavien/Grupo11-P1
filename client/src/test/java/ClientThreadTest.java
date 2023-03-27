@@ -1,31 +1,36 @@
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.io.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class ClientThreadTest {
-
-    @org.junit.jupiter.api.Test
-
-    void getID() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 15 , 10 );
-        assertEquals(15,clientThread.getID());
+    private ClientThread clientThread;
+    @BeforeEach
+    void setup() throws IOException {
+        this.clientThread = new ClientThread(8888, 80 , 200 );
     }
 
     @org.junit.jupiter.api.Test
-    void setImDone() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 1 , 10 );
+    @DisplayName("ID getter")
+    void getID(){
+
+        assertEquals(80,clientThread.getID());
+    }
+
+    @org.junit.jupiter.api.Test
+    void setImDone(){
+
 
         assertEquals(true,clientThread.setImDone(true));
     }
 
     @org.junit.jupiter.api.Test
-    void stopLiving() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 2 , 10 );
+    void stopLiving() {
         assertEquals(false,clientThread.stopLiving());
     }
 
@@ -67,7 +72,6 @@ class ClientThreadTest {
 
     @org.junit.jupiter.api.Test
     void spamMessages() throws IOException {
-        ClientThread clientThread = new ClientThread(8888, 7 , 10 );
         clientThread.spamMessages();
         Timestamp timestamp = clientThread.getTimeStamp();
         assertEquals(timestamp + " - Action : MESSAGE - CLIENT ID:"+clientThread.getID()+" - "+ clientThread.getRandNum(),leitorUltimaLinha());
