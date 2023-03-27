@@ -18,7 +18,10 @@ public class ServerThread extends Thread {
     private Socket socket;
 
 
-
+    /**
+     * used to inicialize new server threads
+     * @param port the port that is going to be connected with
+     */
     public ServerThread ( int port ) {
         this.port = port;
         try {

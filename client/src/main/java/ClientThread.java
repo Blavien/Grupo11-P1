@@ -46,6 +46,12 @@ public class ClientThread extends Thread {
     }
 
 
+    /**
+     * @param port That's the port fo the server
+     * @param id  The thread's ID
+     * @param freq  That's a frequency
+     * @throws IOException If there's an problem it will trow and IOExecption
+     */
 
     public ClientThread ( int port , int id , int freq ) throws IOException {
         this.port = port;

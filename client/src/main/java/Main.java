@@ -4,6 +4,9 @@ import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Main Class that provides a menu to control the client threads
+ */
 public class Main implements ServerConfigReader {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final ConcurrentHashMap<Integer, ClientThread> clients = new ConcurrentHashMap<>();
@@ -12,7 +15,7 @@ public class Main implements ServerConfigReader {
     /**
      * The main is the menu of the client, it is where you can choose the options that lets you interact with the
      * server
-     * @param args
+     * @param args It do be an argument
      */
     public static void main ( String[] args ) throws IOException {
         ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity

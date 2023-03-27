@@ -1,8 +1,14 @@
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class  Main {
-
+/**
+ * Main class that initializes the server
+ */
+public class Main {
+    /**
+     *  main of the server
+     * @param args It do be an argument
+     */
     public static void main ( String[] args ) {
         String filePath = "server/Server.log";
         try {

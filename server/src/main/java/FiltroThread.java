@@ -16,6 +16,10 @@ public class FiltroThread implements Runnable {
     private String file;
     private BlockingQueue<String> queue;  //Buffer de memória partilhado
 
+    /**
+     * @param queue This queue is the shared memory between the producer and consumer
+     * @param file It's the path to where the filtered words are stored
+     */
     public FiltroThread(BlockingQueue queue, String file) {
         this.queue = queue;
         this.file = file;
@@ -54,6 +58,7 @@ public class FiltroThread implements Runnable {
             e.printStackTrace();
         }
     }
+
     public void run() {
         try {
             int size=0;
