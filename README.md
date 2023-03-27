@@ -1,7 +1,7 @@
 # Grupo11-P1
 Repositório do projecto 1 de Programação avançada, do grupo 11
 
-
+No terminal do main dos clientes, nem sempre é possível ver o menu mas é possível inserir qualquer opção do menu e deverá funcionar.
 
 Caso ocorram erros envolvendo caminhos, deve alterar os caminhos nos seguintes métodos: 
     WriteLog() do clientThread, colocar o caminho absoluto no fileWriter do server.log
