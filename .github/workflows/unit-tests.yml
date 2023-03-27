@@ -1,3 +1,13 @@
+name: Test JAVA project on different OS
+
+on:
+  pull_request:
+    branches:
+      - final
+  push:
+    branches:
+      - final
+
 jobs:
   build:
     strategy:
@@ -13,4 +23,4 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
       - name: Build with Maven on ${{ matrix.os }}
-        run: mvn package test
+        run: mvn package

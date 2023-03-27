@@ -24,7 +24,7 @@ class ServerThreadTest {
 
     @Test
     @DisplayName("Test if accept the exception")
-    void ServerThreadException() throws IOException{
+    void ServerThreadException() throws IOException {
         int port = 10;
         ServerSocket serverTest = new ServerSocket(port);
         assertThrows(BindException.class, () -> new ServerSocket(port));

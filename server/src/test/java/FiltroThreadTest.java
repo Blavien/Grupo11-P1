@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
 class FiltroThreadTest {
-/*
+
     private BlockingQueue producer;
     private FiltroThread filtro;
 
@@ -82,5 +82,5 @@ class FiltroThreadTest {
         filtro1.run();
 
     }
-*/
+
 }
