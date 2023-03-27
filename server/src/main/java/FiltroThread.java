@@ -22,7 +22,7 @@ public class FiltroThread implements Runnable {
     /**
      * This method returns the message filtered, which is the message after the process of the filter, that means
      * that is the message sent to a client but without the words written in the file "filtro.txt"
-     * @return
+     * @return final message
      */
     public String getFilteredMessage() {
         return messagefiltered;
