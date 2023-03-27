@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,10 +20,12 @@ public class Main implements ServerConfigReader {
     /**
      * The main is the menu of the client, it is where you can choose the options that lets you interact with the
      * server
+     *
      * @param args It do be an argument
      */
-    public static void main ( String[] args ) throws IOException {
-        ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
+    public static void main(String[] args) throws IOException {
+        int threadWorkers = ServerConfigReader.getVariable("n_thread_workers");
+        ExecutorService executor = Executors.newFixedThreadPool(threadWorkers); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
         while (menu) {
@@ -35,7 +38,8 @@ public class Main implements ServerConfigReader {
             System.out.println("4. Genocide - Connected or Waiting");
             System.out.println("5. Remove words of the filter");
             System.out.println("6. Add words to the filter");
-            System.out.println("\nClients alive: "+ clients.size());
+            System.out.println("7. Change the file Server.config");
+            System.out.println("\nClients alive: " + clients.size());
             System.out.println("\n\nChoose an option:");
             int i = in.nextInt();
             switch (i) {
@@ -54,9 +58,9 @@ public class Main implements ServerConfigReader {
                     System.out.println("Available users: " + msg);
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
-                        if(clients.get(m).isConnected()){
+                        if (clients.get(m).isConnected()) {
                             clients.get(m).sendMessage();
-                        }else{
+                        } else {
                             System.out.println("\nU think u can send a message from an offline client?");
                         }
 
@@ -83,11 +87,11 @@ public class Main implements ServerConfigReader {
                     System.out.println("Available users: " + message2);
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
-                        if(clients.get(clientId).isConnected()){
+                        if (clients.get(clientId).isConnected()) {
                             ClientThread client = clients.get(clientId);
                             client.setImDone(true);//Vai avisar a thread para terminar
                             clients.remove(clientId); //remove deste array
-                        }else{
+                        } else {
                             System.out.println("\nThat client isn't connected to the server.\n");
                         }
                     } else {
@@ -100,9 +104,9 @@ public class Main implements ServerConfigReader {
                         break;
                     }
                     for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        if(clients.get(l) != null){
+                        if (clients.get(l) != null) {
                             clients.get(l).setImDone(true); //Avisam para terminar estas thread
-                        }else{
+                        } else {
                             continue;
                         }
                     }
@@ -114,12 +118,47 @@ public class Main implements ServerConfigReader {
                 case 6:
                     adicionaPalavrasFiltro();
                     break;
-            }
+                case 7:
+                    Scanner scanner = new Scanner(System.in);
 
+                    while (true) {
+                        System.out.print("Digite o nome da variável que deseja alterar: ");
+                        String variable = scanner.nextLine();
+                        if (variable.equals("FINAL_MAX_CLIENTS")) {
+                            System.out.println("A variável FINAL_MAX_CLIENTS não pode ser alterada.");
+                            break;
+                        }
+                        if (variable.equals("n_thread_workers") || variable.equals("queue_capacity")) {
+                            System.out.print("\nDigite um novo valor inteiro " + variable + ": ");
+
+                            while (true) {
+                                if (scanner.hasNextInt()) {
+                                    int value = scanner.nextInt();
+                                    try {
+                                        String valueS = Integer.toString(value);
+                                        ServerConfigReader.setVariable(variable, valueS);
+                                        System.out.println("O valor da variável " + variable + " foi atualizado para " + value + " com sucesso!");
+                                    } catch (IOException e) {
+                                        System.out.println("ERROR " + e.getMessage());
+                                    }
+                                    break;
+                                } else {
+                                    System.out.println("Insira um numero ");
+                                    scanner.next();
+                                }
+
+                            }
+                            break;
+                        } else {
+                            System.out.println("\nInsira um nome valido ");
+                        }
+                    }
+
+            }
         }
     }
 
-    public static void removePalavrasFiltro(){
+    public static void removePalavrasFiltro() {
         try {
             // Lê o conteúdo do arquivo "filtro.txt" e guarda as palavras em um array
             Scanner scanner = new Scanner(new File("server/filtro.txt"));
@@ -154,7 +193,8 @@ public class Main implements ServerConfigReader {
             System.out.println("Error trying to write in the file");
         }
     }
-    public static void adicionaPalavrasFiltro(){
+
+    public static void adicionaPalavrasFiltro() {
         try {
             // Pede ao usuário que insira as palavras a serem adicionadas
             Scanner scanner = new Scanner(System.in);
@@ -176,10 +216,11 @@ public class Main implements ServerConfigReader {
         } catch (IOException e) {
             System.out.println("Error while trying to add words in the filter file");
         }
-
     }
+}
 
 
-    }
+
+
 
 

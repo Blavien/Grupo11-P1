@@ -1,6 +1,7 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.io.FileOutputStream;
 
 public interface ServerConfigReader {
     
@@ -19,6 +20,16 @@ public interface ServerConfigReader {
 
      static int getVariable(String variable) throws IOException {
         return Integer.parseInt(getProperties().getProperty(variable));
+    }
+     static void setVariable(String variable, String value) throws IOException {
+        Properties properties = getProperties();
+        properties.setProperty(variable, value);
+        FileOutputStream outputStream = new FileOutputStream("C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\Server.config");
+        try {
+            properties.store(outputStream,value);
+        } finally {
+            outputStream.close();
+        }
     }
 
 
