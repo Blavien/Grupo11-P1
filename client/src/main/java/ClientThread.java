@@ -58,7 +58,7 @@ public class ClientThread extends Thread {
         this.id = id;
         this.freq = freq;
         this.clientThreadQueue = new LinkedBlockingQueue<>();
-        this.queueCapacity = ServerConfigReader.getVariable("queue_capacity");
+        this.queueCapacity = 3;
         this.amIDone = false;
         this.connected = false;
         this.i= 0;
