@@ -99,6 +99,7 @@ public class ClientThread extends Thread {
     public Timestamp getTimeStamp(){
         return timestamp;
     }
+
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
      * @param event are the many possible events that a client can write in the server.log     *
@@ -106,8 +107,6 @@ public class ClientThread extends Thread {
      * The writing of these events are on the following format
      *
      */
-
-
     public void WriteLog(String msg, int event){
 
 
@@ -133,7 +132,6 @@ public class ClientThread extends Thread {
             }
         }
     }
-
     /**
      * sendMessage method is used to send a message to a user, it is called in client/main and writes a message
      * to the respective user
@@ -163,8 +161,6 @@ public class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
     }
-
-
     /**
      *
      *This method is mainly used to see if the task pool is working, in order to do that, this method is repeatedly
