@@ -16,7 +16,7 @@ class FiltroThreadTest {
         this.filtro = new FiltroThread(producer, "C:\\Users\\André\\IdeaProjects\\Grupo11-P1\\server\\test.txt");
 
     }
-    /*
+
 
 
     @Test
@@ -81,5 +81,5 @@ class FiltroThreadTest {
         filtro1.run();
 
     }
-    */
+
 }
