@@ -94,11 +94,9 @@ public class ClientThread extends Thread {
     }
     /**
      * @param msg is the msg that the client is going to write, we only use this on case 3
-     * @param event are the many possible events that a client can write in the server.log
-     *             <p>
+     * @param event are the many possible events that a client can write in the server.log     *
      *  Still on these events, they can be 'connecting' or disconnecting from the server, 'sent a message' if the client does send a message or 'waiting' when a client is waiting to enter de server
      * The writing of these events are on the following format
-     *              <timestamp> - Action : <type of action> - <Id of the client> - message
      *
      */
 
@@ -197,7 +195,7 @@ public class ClientThread extends Thread {
      * This method is used to change the value of the variable randomAux, it is used to store the random number
      * that is generated in the spamMessages method.
      * It is only used in the unit test of spamMessages method.
-     * @param rand
+     * @param rand new random for the setter
      */
     public void setRandNum(int rand){
         randomAux=rand;
