@@ -7,7 +7,9 @@ import java.util.Scanner;
 import java.lang.Runnable;
 import java.util.concurrent.BlockingQueue;
 
-
+/**
+ * Class used to create new threads of the filter
+ */
 public class FiltroThread implements Runnable {
     private String messagefiltered;
     private String message;

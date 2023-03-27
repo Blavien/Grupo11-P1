@@ -10,8 +10,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-
-
+/**
+ *  CLass that defines the behaviour of the clients
+ */
 public class ClientThread extends Thread {
     private final int port;
     private final int id;

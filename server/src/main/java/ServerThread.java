@@ -7,6 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Thread of the server
+ */
 public class ServerThread extends Thread {
     private final int port;
     private DataInputStream in;
@@ -24,13 +27,6 @@ public class ServerThread extends Thread {
             e.printStackTrace ( );
         }
     }
-
-    /**
-     *
-     * @return threadpool_size Reads from Server.config the size of our thread/task pool
-     */
-
-
     public void run() {
         while (true) {
             try {

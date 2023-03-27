@@ -18,6 +18,8 @@ public class Main implements ServerConfigReader {
         ExecutorService executor = Executors.newFixedThreadPool(3); //penso que deve ter o mesmo tamanho que o server_capacity
         int id_counter = 0;
         boolean menu = true;
+        ClientThread clientThread = new ClientThread(8888, 15 , 10 );
+        executor.submit(clientThread);
         while (menu) {
             System.out.print("\033[H\033[2J"); // clear console
             System.out.flush();
@@ -36,6 +38,11 @@ public class Main implements ServerConfigReader {
                         break;
                     }
                     System.out.println("\nFrom which client do you want to send the message to:");
+                    String msg = " | ";
+                    for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
+                        msg+= clients.get(l).getID() + " | ";
+                    }
+                    System.out.println("Available users: " + msg);
                     int m = in.nextInt();
                     if (clients.containsKey(m)) {
                         if(clients.get(m).isConnected()){
@@ -63,12 +70,12 @@ public class Main implements ServerConfigReader {
                     id_counter += n;
                     break;
                 case 3:
-                    String message = " | ";
+                    String message2 = " | ";
                     for (int l = 0; l < clients.size(); l++) {  //L is the id of the thread
-                        message+= clients.get(l).getID() + " | ";
+                        message2+= clients.get(l).getID() + " | ";
                     }
                     System.out.println("\nInput the client's id that u want to kill:\n");
-                    System.out.println("Available users: " + message);
+                    System.out.println("Available users: " + message2);
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
                         if(clients.get(clientId).isConnected()){
