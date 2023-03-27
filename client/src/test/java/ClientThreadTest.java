@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,14 +18,14 @@ class ClientThreadTest {
         this.clientThread = new ClientThread(8888, 80 , 200 );
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("ID getter")
     void getID(){
 
         assertEquals(80,clientThread.getID());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("amIDone setter")
     void setImDone(){
 
@@ -31,7 +33,7 @@ class ClientThreadTest {
         assertEquals(true,clientThread.setImDone(true));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("amIDone getter")
     void stopLiving() {
         assertEquals(false,clientThread.stopLiving());
@@ -50,7 +52,7 @@ class ClientThreadTest {
         leitor.close();
         return ultimaLinha;
     }
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("Test writeLog method and its possibilities")
     void writeLog() throws IOException {
         clientThread.WriteLog("bla",1);
@@ -68,14 +70,14 @@ class ClientThreadTest {
     }
 
 
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("test of the spamming messages method")
     void spamMessages() throws IOException {
         clientThread.spamMessages();
         Timestamp timestamp = clientThread.getTimeStamp();
         assertEquals(timestamp + " - Action : MESSAGE - CLIENT ID:"+clientThread.getID()+" - "+ clientThread.getRandNum(),leitorUltimaLinha());
     }
-    @org.junit.jupiter.api.Test
+    @Test
     @DisplayName("Testing getter and setter of the RandNum variable")
     void setGetRandNum() throws IOException {
         clientThread.setRandNum(4);
