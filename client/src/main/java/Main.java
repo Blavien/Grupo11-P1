@@ -79,7 +79,6 @@ public class Main implements ServerConfigReader {
                     break;
                 case 3:
                     System.out.println("\nInput the client's id that u want to kill:\n");
-                    System.out.println("Available users: " + message2);
                     int clientId = in.nextInt();
                     if (clients.containsKey(clientId)) {
                         if (clients.get(clientId).isConnected()) {
