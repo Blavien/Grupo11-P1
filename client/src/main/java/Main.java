@@ -5,6 +5,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.io.*;
 import java.util.*;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 /**
  * Main Class that provides a menu to control the client threads
@@ -31,7 +33,8 @@ public class Main implements ServerConfigReader {
             System.out.println("2. Create new clients");
             System.out.println("3. End a client's life");
             System.out.println("4. Genocide - Connected or Waiting");
-            System.out.println("5. Remove one word from the filter");
+            System.out.println("5. Remove words of the filter");
+            System.out.println("6. Add words to the filter");
             System.out.println("\nClients alive: "+ clients.size());
             System.out.println("\n\nChoose an option:");
             int i = in.nextInt();
@@ -107,7 +110,11 @@ public class Main implements ServerConfigReader {
                     break;
                 case 5:
                     removePalavrasFiltro();
+                    break;
+                case 6:
+                    adicionaPalavrasFiltro();
             }
+
         }
     }
 
@@ -118,15 +125,16 @@ public class Main implements ServerConfigReader {
             String content = scanner.useDelimiter("\\Z").next();
             String[] words = content.split("\\s+");
 
-            // Pede ao usuário que insira uma palavra
+            // Pede ao usuário que insira as palavras a serem filtradas
             Scanner input = new Scanner(System.in);
-            System.out.println("Insira uma palavra:");
-            String wordToRemove = input.nextLine();
+            System.out.println("Insert the words you want to remove separated by spaces (example: dog cat meow hello)");
+            String wordsToRemove = input.nextLine();
 
-            // Remove as palavras do array que são iguais à palavra fornecida pelo usuário
+            // Separa as palavras fornecidas pelo usuário e remove as palavras do array que são iguais a elas
+            String[] wordsToRemoveArray = wordsToRemove.split("\\s+");
             List<String> filteredWords = new ArrayList<String>();
             for (String word : words) {
-                if (!word.equals(wordToRemove)) {
+                if (!Arrays.asList(wordsToRemoveArray).contains(word)) {
                     filteredWords.add(word);
                 }
             }
@@ -138,12 +146,39 @@ public class Main implements ServerConfigReader {
             }
             writer.close();
 
-            System.out.println("Operação concluída com sucesso.");
+            System.out.println("Operation completed.");
         } catch (FileNotFoundException e) {
-            System.out.println("O arquivo 'filtro.txt' não foi encontrado.");
+            System.out.println("filtro.txt's path couldn't be found");
         } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao tentar escrever no arquivo 'filtro.txt'.");
+            System.out.println("Error trying to write in the file");
         }
     }
+    public static void adicionaPalavrasFiltro(){
+        try {
+            // Pede ao usuário que insira as palavras a serem adicionadas
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Insert the words that you want to add to the filter, they should be separated by spaces (example: dog cat meow): ");
+            String input = scanner.nextLine();
+
+            // Lê o conteúdo atual do arquivo "filtro.txt"
+            String content = new String(Files.readAllBytes(Paths.get("server/filtro.txt")));
+
+            // Adiciona as novas palavras ao conteúdo existente
+            content += " " + input;
+
+            // Grava o novo conteúdo no arquivo "filtro.txt"
+            FileWriter writer = new FileWriter("server/filtro.txt");
+            writer.write(content);
+            writer.close();
+
+            System.out.println("The words were added to the filter with success");
+        } catch (IOException e) {
+            System.out.println("Error while trying to add words in the filter file");
+        }
+
     }
+
+
+    }
+
 
