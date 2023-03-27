@@ -35,13 +35,8 @@ class ClientThreadTest {
         assertEquals(false,clientThread.stopLiving());
     }
 
-    /**
-     * This method is used to help other unit tests that are related to reading strings from the log, in this case
-     * the last line
-     * @return
-     * @throws IOException
-     */
-    /*
+
+
     public String leitorUltimaLinha() throws IOException {
         BufferedReader leitor = new BufferedReader(new FileReader("C:\\Users\\RP\\IdeaProjects\\Grupo11-P1\\server\\Server.log"));
         String linhaAtual = leitor.readLine();
